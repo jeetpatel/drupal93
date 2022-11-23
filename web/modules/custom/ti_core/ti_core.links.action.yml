@@ -1,0 +1,5 @@
+entity.ti_config.add_form:
+  route_name: 'entity.ti_config.add_form'
+  title: 'Add Teachit Configuration Entity'
+  appears_on:
+    - entity.ti_config.collection

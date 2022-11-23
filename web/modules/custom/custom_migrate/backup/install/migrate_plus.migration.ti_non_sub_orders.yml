@@ -1,0 +1,173 @@
+# Started to create commerce orders
+
+id: ti_non_sub_orders
+source:
+  plugin: unified_transactions
+  batch_size: 10000
+  constants:
+    address_separator: ', '
+    unified_prefix: 'U'
+    Ref1: 'Reference 1: '
+    Ref2: ' Reference 2: '
+    source_prefix: '!SourceStart:'
+    source_suffix: ':SourceEnd!'
+    invoice_prefix: '!Invoicestart:'
+    invoice_suffix: ':Invoiceend!'
+    store_id: 1
+
+destination:
+  plugin: entity:commerce_order
+  default_bundle: 'default'
+
+process:
+
+  test:
+    - plugin: skip_on_value
+      source: Complete
+      value: 'No'
+      method: row
+
+  test2:
+    - plugin: skip_on_value
+      source: Test
+      value: 'Yes'
+      method: row
+
+  order_number:
+    plugin: concat
+    source:
+      - constants/unified_prefix
+      - Unique Id
+
+  store_id: constants/store_id
+
+  field_order_type:
+    plugin: static_map
+    source: Source Id
+    map:
+      1: offline
+      2: offline
+      3: offline
+      4: online
+      5: offline
+      6: online
+
+  created:
+    - plugin: default_value
+      default_value: '01/01/2000 00:00:00'
+      source: Orderdate
+    - plugin: format_date
+      from_format: 'd/m/Y H:i:s'
+      to_format: 'U'
+      source: Orderdate
+      from_timezone: UTC
+      to_timezone: UTC
+
+  placed:
+    - plugin: default_value
+      default_value: '01/01/2000 00:00:00'
+      source: Created
+    - plugin: format_date
+      from_format: 'd/m/Y H:i:s'
+      to_format: 'U'
+      source: Orderdate
+      from_timezone: UTC
+      to_timezone: UTC
+
+  changed:
+    - plugin: default_value
+      default_value: '01/01/2000 00:00:00'
+      source: Orderdate
+    - plugin: format_date
+      from_format: 'd/m/Y H:i:s'
+      to_format: 'U'
+      source: Orderdate
+      from_timezone: UTC
+      to_timezone: UTC
+
+  state:
+    plugin: ti_get_order_state
+    source: Complete
+
+  uid:
+    plugin: merged_user_lookup
+    source: Member Id
+
+  contact:
+    - plugin: skip_on_empty
+      source: Customer Id
+      method: process
+    - plugin: crm_order_lookup
+      source: Unique Id
+
+  order_items:
+    plugin: order_item_lookups
+    source: Unique Id
+
+  field_invoice_notes:
+    plugin: concat
+    source:
+      - constants/Ref1
+      - Reference
+      - constants/Ref2
+      - Reference2
+      - constants/source_prefix
+      - Source Id
+      - constants/source_suffix
+      - constants/invoice_prefix
+      - Reference
+      - constants/invoice_suffix
+
+
+  #  country_code:
+#      plugin: country_code_lookup
+#      source: County
+
+#  addressline2:
+#    plugin: concat
+#    source:
+#      - Address2
+#      - Address3
+#
+#  billing_profile_entity:
+#    plugin: entity_generate_revision
+#    entity_type: profile
+#    bundle_key: type
+#    bundle: customer
+#    value_key: created
+#    source: null
+#    values:
+#      address/address_line1: Address1
+#      address/address_line2: '@addressline2'
+#      address/address_locality: City
+#      address/administrative_area: County
+#      address/country_code: '@country_code'
+#      address/postal_code: Postcode
+#      address/given_name: Firstname
+#      address/family_name: Surname
+#      field_email: Email
+#      field_phone_number: Telephone
+#      tax_number: Vatnumber
+#
+#  billing_profile/target_id:
+#    plugin: extract
+#    source: '@billing_profile_entity'
+#    index:
+#      - 0
+#  billing_profile/target_revision_id:
+#    plugin: extract
+#    source: '@billing_profile_entity'
+#    index:
+#      - 1
+
+
+
+  #  total_paid__number:
+
+  #todo
+#  field_fixed_order:
+#  field_invoice_prefix:
+#  field_order_type:
+#  field_purchase_order_number:
+#  shipments:
+#  field_send_item_to:

@@ -1,0 +1,564 @@
+# Migrates resources
+
+id: resources_non_audited
+source:
+  plugin: resources
+  batch_size: 1000
+  resource_type: non_audited
+  constants:
+    filetype_separator: '.'
+    dir_separator: '/'
+    file_prefix: 'attachments/'
+    file_destination: 'public://products/m_thumbnails/'
+    file_destination_format: '_generated.jpeg'
+    default_thumbnail_prefix: 'https://www.teachitmaths.co.uk/attachments/thumbnails/view/'
+    default_thumbnail_suffix: '.php'
+
+destination:
+  plugin: entity:commerce_product
+  default_bundle: 'digital'
+
+process:
+  title: Title
+
+  id: Resource ID
+  product_id: Resource ID
+
+  uid:
+    plugin: merged_user_lookup
+    source: Contributor ID
+    sensitive: true
+
+  stores:
+    plugin: default_value
+    default_value: 1
+
+  langcode:
+    plugin: default_value
+    default_value: 'en'
+
+  changed/value:
+    - plugin: get
+      source:
+        - Last Modified
+        - Created
+    - plugin: callback
+      callable: array_filter
+    - plugin: callback
+      callable: 'current'
+    - plugin: format_date
+      from_format: 'd/m/Y'
+      to_format: 'U'
+
+  created/value:
+    - plugin: default_value
+      default_value: '01/01/1970 00:00:00'
+      source: Date Live
+    - plugin: format_date
+      from_format: 'd/m/Y H:i:s'
+      to_format: 'U'
+
+  'body/format':
+    plugin: default_value
+    default_value: 'full_html'
+  'body/value': Description
+
+  field_subject:
+    - plugin: get
+      source:
+        - Sub-Subject
+        - Subject
+    - plugin: callback
+      callable: array_filter
+    - plugin: callback
+      callable: 'current'
+    - plugin: explode
+      delimiter: '|'
+    - plugin: extract
+      index:
+        - 0
+    - plugin: callback
+      callable: strtolower
+    - plugin: static_map
+      bypass: TRUE
+      map:
+        'french': 4114
+        'spanish': 4116
+        'german': 4115
+        'chemistry': 4117
+        'physics': 4118
+        'biology': 4119
+        'teachit english': 2
+        'teachit primary': 5650
+        'teachit maths': 4
+        'teachit languages': 13
+        'teachit history': 14
+        'teachit geography': 15
+        'teachit science': 3
+
+  raw_subject:
+    - plugin: get
+      source:
+        - Sub-Subject
+        - Subject
+    - plugin: callback
+      callable: array_filter
+    - plugin: callback
+      callable: 'current'
+    - plugin: explode
+      delimiter: '|'
+    - plugin: extract
+      index:
+        - 0
+    - plugin: callback
+      callable: strtolower
+    - plugin: static_map
+      bypass: TRUE
+      map:
+        'french': 'french'
+        'spanish': 'spanish'
+        'german': 'german'
+        'chemistry': 'chemistry'
+        'physics': 'physics'
+        'biology': 'biology'
+        'teachit english': 'english'
+        'teachit primary': 'primary'
+        'teachit maths': 'maths'
+        'teachit languages': 'languages'
+        'teachit history': 'history'
+        'teachit geography': 'geography'
+        'teachit science': 'science'
+
+  raw_primary_subject:
+    - plugin: get
+      source:
+        - Subject
+    - plugin: callback
+      callable: array_filter
+    - plugin: callback
+      callable: 'current'
+    - plugin: callback
+      callable: strtolower
+    - plugin: static_map
+      bypass: TRUE
+      map:
+        'french': 'french'
+        'spanish': 'spanish'
+        'german': 'german'
+        'chemistry': 'chemistry'
+        'physics': 'physics'
+        'biology': 'biology'
+        'teachit english': 'english'
+        'teachit primary': 'primary'
+        'teachit maths': 'maths'
+        'teachit languages': 'languages'
+        'teachit history': 'history'
+        'teachit geography': 'geography'
+        'teachit science': 'science'
+
+  contributor:
+    - plugin: merged_user_lookup
+      source: Contributor ID
+    - plugin: lookup_contributor_user_type
+
+  field_other_subject:
+    - plugin: skip_on_empty
+      source: Suitable sites
+      method: process
+    - plugin: callback
+      callable: strtolower
+      source: Suitable sites
+    - plugin: explode
+      delimiter: '|'
+    - plugin: static_map
+      bypass: TRUE
+      map:
+        'french': 4114
+        'spanish': 4116
+        'german': 4115
+        'chemistry': 4117
+        'physics': 4118
+        'biology': 4119
+        'teachit english': 2
+        'teachit primary': 5650
+        'teachit maths': 4
+        'teachit languages': 13
+        'teachit history': 14
+        'teachit geography': 15
+        'teachit science': 3
+
+  field_cpd:
+    - plugin: skip_on_empty
+      source: CPD
+      method: process
+    - plugin: callback
+      callable: strtolower
+      source: CPD
+    - plugin: explode
+      delimiter: '|'
+    - plugin: static_map
+      bypass: TRUE
+      map:
+        send: 50
+        teaching and learning: 51
+        ite: 52
+        wellbeing: 53
+
+  field_send:
+    - plugin: skip_on_empty
+      source: SEND
+      method: process
+    - plugin: callback
+      callable: strtolower
+      source: SEND
+    - plugin: explode
+      delimiter: '|'
+    - plugin: static_map
+      bypass: TRUE
+      map:
+        eal: 59
+        dyslexia: 54
+        dyspraxia: 58
+        dyscalculia: 55
+
+  field_keywords:
+    - plugin: skip_on_empty
+      source: Keywords
+      method: process
+    - plugin: explode
+      delimiter: ' '
+      source: Keywords
+    - plugin: str_replace
+      search: '+'
+      replace: ' '
+
+    - plugin: entity_generate
+      entity_type: taxonomy_term
+      bundle_key: vid
+      bundle: keywords
+      value_key: name
+      ignore_case: true
+      access_check: false
+
+  field_global_search_list:
+    - plugin: skip_on_empty
+      source: Global search list
+      method: process
+    - plugin: explode
+      source: Global search list
+      delimiter: '|'
+    - plugin: entity_generate
+      entity_type: taxonomy_term
+      bundle_key: vid
+      bundle: global_search_list
+      value_key: name
+      ignore_case: true
+      access_check: false
+
+  field_activity_type:
+    - plugin: skip_on_empty
+      source: Resource type
+      method: process
+    - plugin: explode
+      delimiter: '|'
+      source: Resource type
+    - plugin: callback
+      callable: trim
+    - plugin: callback
+      callable: strtolower
+    - plugin: entity_lookup
+      entity_type: taxonomy_term
+      bundle_key: vid
+      bundle: activity_type
+      value_key: name
+      ignore_case: true
+      access_check: false
+
+  field_inside:
+    - plugin: static_map
+      source: Includes answers
+      default_value: _none
+      map:
+        Yes: includes_answers
+    - plugin: skip_on_value
+      method: process
+      value: _none
+
+  field_year:
+    - plugin: skip_on_empty
+      source: Key stage
+      method: process
+    - plugin: explode
+      delimiter: '|'
+      source: Key stage
+    - plugin: explode
+      delimiter: ' - '
+    - plugin: callback
+      callable: 'array_reverse'
+    - plugin: callback
+      callable: 'current'
+    - plugin: callback
+      callable: trim
+    - plugin: callback
+      callable: strtolower
+    - plugin: static_map
+      bypass: TRUE
+      map:
+        all key stages: 5692
+        y6: 5691
+        y5: 5690
+        y4: 5689
+        y3: 5688
+        y2: 5687
+        y1: 5686
+        f: 5685
+    - plugin: flatten
+    - plugin: callback
+      callable: array_unique
+
+  field_key_stage:
+    - plugin: skip_on_empty
+      source: Key stage
+      method: process
+    - plugin: explode
+      delimiter: '|'
+      source: Key stage
+    - plugin: explode
+      delimiter: ' - '
+    - plugin: callback
+      callable: 'array_reverse'
+    - plugin: callback
+      callable: 'current'
+    - plugin: callback
+      callable: trim
+    - plugin: callback
+      callable: strtolower
+    - plugin: static_map
+      bypass: TRUE
+      map:
+        all key stages:
+          - 23
+          - 9
+          - 22
+          - 21
+          - 20
+        ks5: 23
+        ks4: 9
+        ks3: 22
+        ks3-5:
+          - 22
+          - 9
+          - 23
+        ks2: 21
+        ks1: 20
+        igcse:
+          - 25
+          - 9
+    - plugin: flatten
+    - plugin: callback
+      callable: array_unique
+
+  field_exam_board:
+    - plugin: skip_on_empty
+      source: Exam boards
+      method: process
+    - plugin: explode
+      delimiter: '|'
+      source: Exam boards
+    - plugin: callback
+      callable: trim
+    - plugin: callback
+      callable: strtolower
+    - plugin: static_map
+      bypass: TRUE
+      map:
+        aqa: 8
+        edexcel: 17
+        wjec/eduqas: 16
+        ocr: 7
+        all exam boards: 2546
+
+  field_level:
+    - plugin: skip_on_empty
+      source: Level
+      method: process
+    - plugin: explode
+      delimiter: '|'
+      source: Level
+    - plugin: callback
+      callable: trim
+    - plugin: callback
+      callable: strtolower
+    - plugin: static_map
+      bypass: TRUE
+      map:
+        secondary: 48
+        primary: 47
+        eyfs: 46
+
+  field_status_category:
+    - plugin: callback
+      callable: trim
+      source: Status
+    - plugin: callback
+      callable: strtolower
+    - plugin: static_map
+      bypass: TRUE
+      map:
+        published: published
+        archived: not_published
+        not published: not_published
+        under review: review
+
+#  field_resource_access:
+#    source: Access override
+#    plugin: static_map
+#    default_value: normal
+#    map:
+#      '-1': free_to_all_users
+#      '0': free_to_all_users
+#      '1': normal
+#      '4': normal
+
+  field_product_resources:
+    plugin: migration_lookup
+    allow_multiple: true
+    source: Resource ID
+    migration: resource_attachments
+    source_ids:
+      resource_attachments:
+        Resource ID: Resource ID
+
+  field_global_tag:
+    - plugin: skip_on_empty
+      source: Global Attributes
+      method: process
+    - plugin: explode
+      delimiter: '|'
+      source: Global Attributes
+    - plugin: callback
+      callable: trim
+    - plugin: callback
+      callable: strtolower
+    - plugin: entity_lookup
+      entity_type: taxonomy_term
+      bundle_key: vid
+      bundle: tags
+      value_key: name
+      ignore_case: true
+      access_check: false
+
+  field_category:
+    - plugin: category_term_heirarchy
+      source: Tags
+    - plugin: category_taxonomy_lookup
+      entity_type: taxonomy_term
+      bundle:
+        - category
+        - secondary_category
+      value_key: name
+      ignore_case: true
+      access_check: false
+
+  file_source:
+    plugin: concat
+    source:
+      - constants/file_prefix
+      - Custom thumbnail
+
+  file_destination:
+    plugin: concat
+    source:
+      - constants/file_destination
+      - Resource ID
+      - constants/dir_separator
+
+  custom_thumbnail_set:
+    plugin: default_value
+    source: Custom thumbnail
+    default_value: 0
+
+  custom_thumbnail:
+    - plugin: skip_on_empty
+      source: Custom thumbnail
+      method: process
+    - plugin: s3_file_import_print_mapping
+      bucket: teachit-legacy-files
+      access_key: AKIARIBY6NOC4SV4MHEX
+      secret_key: 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
+      region: 'eu-west-1'
+      source: '@file_source'
+      destination: '@file_destination'
+
+  default_thumbnail_url:
+    plugin: concat
+    source:
+      - constants/default_thumbnail_prefix
+      - Resource ID
+      - constants/default_thumbnail_suffix
+
+  file_destination_full:
+    plugin: concat
+    source:
+      - '@file_destination'
+      - Resource ID
+      - constants/file_destination_format
+
+  default_thumbnail:
+    - plugin: skip_on_value
+      source: '@custom_thumbnail_set'
+      method: process
+      not_equals: true
+      value: 0
+    - plugin: external_file_import_print_mapping
+      file_exists: use existing
+      source:
+      - '@default_thumbnail_url'
+      - '@file_destination_full'
+
+  field_images/0/target_id:
+    - plugin: get
+      source:
+        - '@custom_thumbnail'
+        - '@default_thumbnail'
+    - plugin: callback
+      callable: array_filter
+    - plugin: flatten
+    - plugin: skip_on_empty
+      method: process
+    - plugin: extract
+      index:
+        - 0
+
+  field_images/0/title: Title
+
+  field_images/0/alt: Title
+
+#  field_images: '@images'
+
+  metatags/0/title: SEO Page title
+  metatags/0/description: SEO Meta description
+
+  field_product_meta_tags:
+    plugin: callback
+    callable: serialize
+    source: '@metatags'
+
+  status:
+    - plugin: static_map
+      source: '@field_status_category'
+      bypass: TRUE
+      map:
+        published: 1
+        not_published: 0
+        review: 0
+
+  #field_copyright_check:
+  #field_copyright_notes:
+  #field_copyright_expiration:
+  #field_digital_physical_label:
+  #field_price_type:
+  #field_product_detail_label:
+  #field_resource_access_end_date:
+  #field_review:
+  #field_extract:

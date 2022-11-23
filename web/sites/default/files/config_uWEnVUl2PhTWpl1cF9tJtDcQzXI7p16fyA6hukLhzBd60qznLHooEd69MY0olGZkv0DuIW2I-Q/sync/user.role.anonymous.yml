@@ -1,0 +1,22 @@
+uuid: 619bc91c-318e-4b67-997d-5d7766c844bd
+langcode: en
+status: true
+dependencies: {  }
+_core:
+  default_config_hash: pq_mEIu_B4widZN7Ap81iCJSjShFFdcL0jEiCi8VrDk
+id: anonymous
+label: 'Anonymous user'
+weight: 0
+is_admin: false
+permissions:
+  - 'access comments'
+  - 'access content'
+  - 'access site-wide contact form'
+  - 'access webprofiler'
+  - 'restful get learning_learningpost'
+  - 'restful post learning_learningpost'
+  - 'search content'
+  - 'use text format restricted_html'
+  - 'view media'
+  - 'view published learning entity entities'
+  - 'view webprofiler toolbar'

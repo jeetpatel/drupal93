@@ -1,0 +1,22 @@
+entity.employee.settings:
+  title: Settings
+  route_name: entity.employee.settings
+  base_route: entity.employee.settings
+entity.employee.view:
+  title: View
+  route_name: entity.employee.canonical
+  base_route: entity.employee.canonical
+entity.employee.edit_form:
+  title: Edit
+  route_name: entity.employee.edit_form
+  base_route: entity.employee.canonical
+entity.employee.delete_form:
+  title: Delete
+  route_name: entity.employee.delete_form
+  base_route: entity.employee.canonical
+  weight: 10
+entity.employee.collection:
+  title: Employee
+  route_name: entity.employee.collection
+  base_route: system.admin_content
+  weight: 10

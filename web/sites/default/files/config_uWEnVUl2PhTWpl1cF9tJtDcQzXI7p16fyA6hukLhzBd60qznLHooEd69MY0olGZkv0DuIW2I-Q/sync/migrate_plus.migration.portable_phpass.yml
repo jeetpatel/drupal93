@@ -1,0 +1,33 @@
+uuid: e256a4a5-9aea-4f62-91a3-e90b3f86ddde
+langcode: en
+status: true
+dependencies:
+  enforced:
+    module:
+      - custom_migrate
+_core:
+  default_config_hash: hHw9E67IZWWSDguuh4bipC6s2xfQ0T8cyEvaJiLp1rQ
+id: portable_phpass
+class: null
+field_plugin_method: null
+cck_plugin_method: null
+migration_tags:
+  - migrate
+migration_group: portable_phpass
+label: 'Portable Phpass Hashes'
+source:
+  plugin: portable_phpass_data
+process:
+  pass: user_pass
+  mail: user_email
+  init: user_email
+  status: user_status
+  roles: role_id
+  name: user_login
+  created: user_registered
+  changed: '@created'
+  access: '@created'
+  login: '@created'
+destination:
+  plugin: 'entity:user'
+migration_dependencies: {  }

@@ -1,0 +1,164 @@
+# Migrates barclaycard subscriptions
+
+id: ti_crm_subscriptions
+source:
+  plugin: crm_transactions
+  batch_size: 10000
+  constants:
+    number_of_logins: 1
+    quantity: 1
+    order_type_online: postal
+    time_suffix: 'T00:00:00'
+
+destination:
+  plugin: entity:subscription
+
+process:
+
+  pending_status:
+    plugin: skip_on_value
+    source: Status
+    value: 'Pending'
+    method: row
+
+  # Active -> Active + published
+  # Cancelled + due date in future -> Suspended + published = wont renew but still has access
+  # Cancelled + due date in past -> Suspended + unpublished = wont renew and has no access
+  # Expired -> Lapsed + unpublished
+  # Overdue -> Lapsed + unpublished
+
+  field_auto_renew:
+    plugin: static_map
+    source: Status
+    default_value: 0
+    map:
+      Active: 1
+
+  field_order_type: constants/order_type_online
+
+  user_id:
+    - plugin: entity_lookup
+      entity_type: user
+      value_key: field_legacy_crm_contact_id
+      ignore_case: true
+      access_check: false
+      source: Contact ID
+
+  school_term:
+    plugin: migration_lookup
+    migration: schools
+    source: Customer ID
+    no_stub: true
+
+  created:
+    - plugin: default_value
+      default_value: '01/01/2000'
+      source: Process Date
+    - plugin: format_date
+      from_format: 'd/m/Y'
+      to_format: 'U'
+      from_timezone: UTC
+      to_timezone: UTC
+
+  changed:
+    - plugin: default_value
+      default_value: '01/01/2000'
+      source: Process Date
+    - plugin: format_date
+      from_format: 'd/m/Y'
+      to_format: 'U'
+      from_timezone: UTC
+      to_timezone: UTC
+
+  field_subject:
+    plugin: static_map
+    source: Unified Product ID
+    map:
+      156: 14
+      226: 14
+      80: 14
+      81: 14
+      117: 14
+      154: 14
+      272: 14
+      283: 14
+      357: 14
+      299: 14
+      300: 14
+      361: 14
+
+  field_subscription_type:
+    plugin: static_map
+    source: Unified Product ID
+    map:
+      156: school_department
+      226: premium
+      80: premium
+      81: premium
+      117: premium
+      154: school_department
+      272: school_department
+      283: school_department
+      357: school_department
+      299: premium
+      300: school_department
+      361: premium
+
+  field_order_items:
+    - plugin: migration_lookup
+      allow_multiple: true
+      source: Unique ID
+      migration: ti_crm_subscriptions_transactions
+      no_stub: true
+      source_ids:
+        ti_bc_subscriptions_transactions:
+          Unique ID: Unique ID
+    - plugin: extract_order_items
+
+  logins_pre_lookup:
+    - plugin: crm_purchase_logins_lookup
+      source: Customer ID
+
+  field_logins:
+    - plugin: merged_user_lookup
+      sensitive: true
+      source: '@logins_pre_lookup'
+    - plugin: update_user_school
+  name: Product Desc
+  field_number_of_logins: Teachers
+
+  status_interim:
+    plugin: ti_get_crm_subscription_status
+    source: Status
+
+  status:
+    plugin: extract
+    source: '@status_interim'
+    index:
+      - 0
+
+  field_status:
+    plugin: extract
+    source: '@status_interim'
+    index:
+      - 1
+
+
+#    plugin: entity_generate
+#    entity_type: commerce_order_item
+#    bundle_key: type
+#    bundle: default
+#    value_key: order_id
+#    source:
+#      plugin: default_value
+#      default_value: null
+#    values:
+#      order_id: Unique ID
+#      quantity: constants/quantity
+#      title: Product
+#      unit_price: Next Amount
+#
+#  payment_method:
+#    plugin: migration_lookup
+#    migration: ti_bc_aliases
+#    source: Alias ID

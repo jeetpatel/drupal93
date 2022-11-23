@@ -1,0 +1,17 @@
+uuid: 2d4b6aad-9fcb-4a54-982f-984b1ec72d96
+langcode: en
+status: true
+dependencies:
+  enforced:
+    module:
+      - custom_migrate
+_core:
+  default_config_hash: rKOWdQ_JbJDKUQDmF-CEcBW0oXkdMYY7OzOGyYuj2MY
+id: md5hash
+label: 'MD5 Hash Algorithm'
+description: 'MD5 Hash Algorithm based user migration.'
+source_type: 'MD5 Hash (Wordpress)'
+module: null
+shared_configuration:
+  source:
+    key: wordpress

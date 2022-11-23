@@ -1,0 +1,10 @@
+uuid: 9cb89537-e707-4f63-b2e8-ec5fa5eb6b57
+langcode: en
+status: true
+dependencies:
+  module:
+    - node
+id: node.editor
+label: Editor
+targetEntityType: node
+cache: true

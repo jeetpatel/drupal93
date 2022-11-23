@@ -1,0 +1,59 @@
+# Learning entity routing definition
+learning_entity.settings_tab:
+  route_name: learning_entity.settings
+  title: 'Settings'
+  base_route: learning_entity.settings
+
+entity.learning_entity.canonical:
+  route_name: entity.learning_entity.canonical
+  base_route: entity.learning_entity.canonical
+  title: 'View'
+
+entity.learning_entity.edit_form:
+  route_name: entity.learning_entity.edit_form
+  base_route: entity.learning_entity.canonical
+  title: 'Edit'
+
+entity.learning_entity.version_history:
+  route_name: entity.learning_entity.version_history
+  base_route: entity.learning_entity.canonical
+  title: 'Revisions'
+
+entity.learning_entity.delete_form:
+  route_name:  entity.learning_entity.delete_form
+  base_route:  entity.learning_entity.canonical
+  title: Delete
+  weight: 10
+
+entity.employee.list_form:
+  route_name: view.employee.page_1
+  base_route: view.employee.page_1
+  title: 'List'
+  
+entity.employee.sub_add_form:
+  route_name: learning.test_menu.dynamic
+  route_parameters:
+    name: 'Links Tab'
+  parent_id: entity.employee.list_form
+  title: 'Sub Tab of List 1'
+
+learning.test_controller_test_1:
+  route_name: learning.test_controller_test
+  parent_id: entity.employee.list_form
+  title: 'Sub Tab of List 2'
+
+entity.employee.add_form:
+  route_name: node.add
+  route_parameters:
+    node_type: 'employee'
+  base_route: view.employee.page_1
+  title: 'Add Employee'
+  
+  
+entity.employee.add_employee_form:
+  route_name: node.add
+  route_parameters:
+    node_type: 'employee'
+  parent_id: entity.block_content.collection
+  title: 'Add Employee'
+  weight: -1

@@ -1,0 +1,10 @@
+services:
+  dcs.event_subscriber:
+    class: Drupal\dcs\EventSubscriber\DcsSubscriber
+    arguments: ['@messenger']
+    tags:
+      - { name: event_subscriber }
+
+  dcs.service:
+    class: Drupal\dcs\Services\DcsService
+    arguments: ['@database', '@logger.factory']

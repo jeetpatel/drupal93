@@ -1,0 +1,171 @@
+# Migrates barclaycard subscriptions
+
+id: ti_bc_subscriptions
+source:
+  plugin: bc_subscriptions
+  batch_size: 10000
+  constants:
+    number_of_logins: 1
+    quantity: 1
+    order_type_online: online
+
+destination:
+  plugin: entity:subscription
+
+process:
+
+  test:
+    plugin: skip_on_value
+    source: Test?
+    method: row
+    value: Yes
+
+  # Active -> Active + published
+  # Cancelled + due date in future -> Suspended + published = wont renew but still has access
+  # Cancelled + due date in past -> Suspended + unpublished = wont renew and has no access
+  # Expired -> Lapsed + unpublished
+  # Overdue -> Lapsed + unpublished
+  status_interim:
+    plugin: ti_get_subscription_status
+    source: Status
+
+  status:
+    plugin: extract
+    source: '@status_interim'
+    index:
+      - 0
+
+  field_status:
+    plugin: extract
+    source: '@status_interim'
+    index:
+      - 1
+
+  field_auto_renew:
+    plugin: static_map
+    source: Status
+    default_value: 0
+    map:
+      Active: 1
+
+  field_expiry_date:
+    - plugin: default_value
+      default_value: '01/01/2000'
+      source: Next Due Date
+    - plugin: format_date
+      source: Next Due Date
+      from_format: 'd/m/Y'
+      to_format: 'Y-m-d\TH:i:s'
+      from_timezone: UTC
+      to_timezone: UTC
+
+  field_order_type: constants/order_type_online
+  user_id:
+    plugin: merged_user_lookup
+    source: Member ID
+  field_logins:
+    plugin: merged_user_lookup
+    source: Member ID
+  name: Product
+  field_number_of_logins: constants/number_of_logins
+
+#    created:
+#    - plugin: default_value
+#      default_value: '01/01/2000 00:00:00'
+#      source: Created
+#    - plugin: format_date
+#      from_format: 'd/m/Y H:i:s'
+#      to_format: 'U'
+#      source: Start Date
+#      from_timezone: UTC
+#      to_timezone: UTC
+#
+#  changed:
+#    - plugin: default_value
+#      default_value: '01/01/2000 00:00:00'
+#      source: Start Date
+#    - plugin: format_date
+#      source: Start Date
+#      from_format: 'd/m/Y H:i:s'
+#      to_format: 'U'
+#      from_timezone: UTC
+#      to_timezone: UTC
+
+  field_subject:
+    plugin: static_map
+    source: Product ID
+    map:
+      68: 5650 # Annual subscription to Teachit Primary (initial period - 6 months)
+      66: 2 # Annual subscription to Teachit.works individual
+      91: 2 # Annual subscription to Teachit individual (initial period - 6 months)
+      84: 3 # Annual subscription to Teachit Science individual
+      67: 2 # Annual subscription to Teachit.plus individual
+      62: 13 # Annual subscription to Teachit Languages (initial period - 6 months)
+      59: 4 # Annual subscription to Teachit Maths (initial period - 6 months)
+      81: 14 # Annual subscription to Teachit History (initial period - 6 months)
+      85: 3 # Annual subscription to Teachit Science (initial period - 6 months)
+      58: 4 # Annual subscription to Teachit Maths individual
+      73: 15 # Annual subscription to Teachit Geography (initial period - 6 months)
+      72: 15 # Annual subscription to Teachit Geography individual
+      61: 13 # Annual subscription to Teachit Languages individual
+      98: 2 # Annual subscription to Teachit.works individual (upgrade)
+      69: 5650 # Annual subscription to Teachit Primary individual
+      80: 14 # Annual subscription to Teachit History individual
+      90: 2 # Annual subscription to Teachit.works (initial period - 6 months)
+      147: 2 # Teachit.works department membership (12 months)
+
+
+  field_subscription_type:
+    plugin: static_map
+    source: Product ID
+    map:
+      68: premium # Annual subscription to Teachit Primary (initial period - 6 months)
+      66: premium # Annual subscription to Teachit.works individual
+      91: premium # Annual subscription to Teachit individual (initial period - 6 months)
+      84: premium # Annual subscription to Teachit Science individual
+      67: premium # Annual subscription to Teachit.plus individual
+      62: premium # Annual subscription to Teachit Languages (initial period - 6 months)
+      59: premium #tbc # Annual subscription to Teachit Maths (initial period - 6 months)
+      81: premium # Annual subscription to Teachit History (initial period - 6 months)
+      85: premium # Annual subscription to Teachit Science (initial period - 6 months)
+      58: premium #tbc # Annual subscription to Teachit Maths individual
+      73: premium # Annual subscription to Teachit Geography (initial period - 6 months)
+      72: premium # Annual subscription to Teachit Geography individual
+      61: premium # Annual subscription to Teachit Languages individual
+      98: premium # Annual subscription to Teachit.works individual (upgrade)
+      69: premium # Annual subscription to Teachit Primary individual
+      80: premium # Annual subscription to Teachit History individual
+      90: premium # Annual subscription to Teachit.works (initial period - 6 months)
+      147: school_department # Teachit.works department membership (12 months)
+
+  field_order_items:
+    - plugin: migration_lookup
+      allow_multiple: true
+      source: Unique ID
+      migration: ti_bc_subscriptions_transactions
+      no_stub: true
+      source_ids:
+        ti_bc_subscriptions_transactions:
+          Subscription ID: Unique ID
+    - plugin: extract_order_items
+
+#
+#    plugin: entity_generate
+#    entity_type: commerce_order_item
+#    bundle_key: type
+#    bundle: default
+#    value_key: order_id
+#    source:
+#      plugin: default_value
+#      default_value: null
+#    values:
+#      order_id: Unique ID
+#      quantity: constants/quantity
+#      title: Product
+#      unit_price: Next Amount
+
+  payment_method:
+    plugin: migration_lookup
+    migration: ti_bc_aliases
+    source: Alias ID
+    no_stub: true

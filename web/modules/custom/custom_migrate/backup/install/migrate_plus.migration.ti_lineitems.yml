@@ -1,0 +1,167 @@
+# Started to create line items for orders
+
+id: ti_lineitems
+source:
+  plugin: csv
+  path: private://migration_csvs/orders/unifiedlineitemsshort.csv
+  ids: ['Unique Id', 'Transaction Id']
+  constants:
+    address_separator: ', '
+
+destination:
+  plugin: entity:commerce_order_item
+  default_bundle: 'default'
+
+process:
+
+  created:
+    - plugin: default_value
+      default_value: '01/01/2000 00:00:00'
+      source: Startdate
+    - plugin: format_date
+      from_format: 'd/m/Y H:i:s'
+      to_format: 'U'
+      source: Startdate
+      from_timezone: UTC
+      to_timezone: UTC
+
+  changed:
+    - plugin: default_value
+      default_value: '01/01/2000 00:00:00'
+      source: Startdate
+    - plugin: format_date
+      from_format: 'd/m/Y H:i:s'
+      to_format: 'U'
+      source: Startdate
+      from_timezone: UTC
+      to_timezone: UTC
+
+  title:
+    plugin: static_map
+    source: Product Id
+    map:
+      156: 'Combined History & Geography department membership (12 months)'
+      226: 'Combined History & Geography Individual membership (12 months)'
+      229: 'Teachit mixed membership - plus with works (12 months)'
+      361: 'Home Educators multi-site subscription'
+      66: 'Annual subscription to Teachit.works individual'
+      67: 'Annual subscription to Teachit.plus individual'
+      83: 'Annual subscription to Teachit.works (free trainee offer)'
+      90: 'Annual subscription to Teachit.works (initial period - 6 months)'
+      91: 'Annual subscription to Teachit individual (initial period - 6 months)'
+      98: 'Annual subscription to Teachit.works individual (upgrade)'
+      128: 'Annual subscription to Teachit.works (NQT offer)'
+      146: 'Teachit.plus department membership (12 months)'
+      147: 'Teachit.works department membership (12 months)'
+      222: 'Annual subscription to Teachit.works Department (upgrade)'
+      227: 'Annual subscription to Teachit.works (PRU)'
+      343: 'Annual subscription to Teachit.works (large PRU)'
+      345: 'Teachit.works department membership (Large school)'
+      456: 'Teachit.plus department membership (LARGE) (12 months)'
+      493: 'Annual subscription to Teachit.plus individual (Price drop - .works lapsed users)'
+      72: 'Annual subscription to Teachit Geography individual'
+      73: 'Annual subscription to Teachit Geography (initial period - 6 months)'
+      119: 'Annual subscription to Teachit Geography (free trainee offer)'
+      155: 'Teachit Geography department membership (12 months)'
+      273: 'Annual subscription to Teachit Geography (PRU)'
+      80: 'Annual subscription to Teachit History individual'
+      81: 'Annual subscription to Teachit History (initial period - 6 months)'
+      117: 'Annual subscription to Teachit History (free trainee offer)'
+      154: 'Teachit History department membership (12 months)'
+      272: 'Annual subscription to Teachit History (PRU)'
+      283: 'Combined History and Geography membership (PRU)'
+      357: 'Upgrade to Combined History and Geography department membership'
+      61: 'Annual subscription to Teachit Languages individual'
+      62: 'Annual subscription to Teachit Languages (initial period - 6 months)'
+      120: 'Annual subscription to Teachit Languages (initial period - 6 months)'
+      152: 'Teachit Languages department membership (12 months)'
+      271: 'Annual subscription to Teachit Languages (PRU)'
+      377: 'Teachit Languages department membership (BULK)'
+      58: 'Annual subscription to Teachit Maths individual'
+      59: 'Annual subscription to Teachit Maths (initial period - 6 months)'
+      118: 'Annual subscription to Teachit Maths (free trainee offer)'
+      151: 'Teachit Maths department membership (12 months)'
+      269: 'Annual subscription to Teachit Maths (PRU)'
+      346: 'Teachit Maths department membership (Large school)'
+      68: 'Annual subscription to Teachit Primary (initial period - 6 months)'
+      69: 'Annual subscription to Teachit Primary individual'
+      123: 'Annual subscription to Teachit Primary (free trainee offer)'
+      148: 'Primary small school membership (101 - 200 pupils on the register)'
+      149: 'Primary medium school membership (201 - 500 pupils on the register)'
+      150: 'Primary large school membership (over 500 pupils on the register)'
+      268: 'Primary very small school membership (less than 100 pupils)'
+      84: 'Annual subscription to Teachit Science individual'
+      85: 'Annual subscription to Teachit Science (initial period - 6 months)'
+      121: 'Annual subscription to Teachit Science (free trainee offer)'
+      153: 'Teachit Science department membership (12 months)'
+      270: 'Annual subscription to Teachit Science (PRU)'
+
+  purchased_entity:
+    plugin: static_map
+    source: Product Id
+    map:
+      156: 66 # Multiple
+      226: # Multiple
+  #      229:
+      361: # Multiple
+  #      66: 30
+  #      67:
+  #      83:
+  #      90:
+  #      91:
+  #      98:
+  #      128:
+  #      146:
+  #      147:
+  #      222:
+  #      227:
+  #      343:
+  #      345:
+  #      456:
+  #      493:
+  #      72:
+  #      73:
+  #      119:
+  #      155:
+  #      273:
+  #      80:
+  #      81:
+  #      117:
+  #      154:
+  #      272:
+  #      283:
+  #      357:
+  #      61:
+  #      62:
+  #      120:
+  #      152:
+  #      271:
+  #      377:
+  #      58:
+  #      59:
+  #      118:
+  #      151:
+  #      269:
+  #      346:
+  #      68:
+  #      69:
+  #      123:
+  #      148:
+  #      149:
+  #      150:
+  #      268:
+  #      84:
+  #      85:
+  #      121:
+  #      153:
+  #      270:
+
+  quantity: Quantity
+  unit_price/currency_code: Currency
+  unit_price/number: Unitprice
+
+  order_id:
+    plugin: migration_lookup
+    migration: ti_orders
+    source: Transaction Id
+

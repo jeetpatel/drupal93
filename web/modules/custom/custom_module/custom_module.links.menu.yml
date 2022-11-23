@@ -1,0 +1,5 @@
+entity.project_config_entity.overview:
+  title: Project Configuration Entities
+  parent: system.admin_structure
+  description: 'List of project configuration entities to extend site functionality.'
+  route_name: entity.project_config_entity.collection

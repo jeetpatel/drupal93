@@ -1,0 +1,20 @@
+uuid: 2ee4d2e5-4454-4163-abc5-d604b0f14f26
+langcode: en
+status: true
+dependencies:
+  theme:
+    - km
+_core:
+  default_config_hash: 13GQpeITIJsp1kyPniXtWZfyFH87vb1xxJCHifL4UeE
+id: km_local_actions
+theme: km
+region: content
+weight: -3
+provider: null
+plugin: local_actions_block
+settings:
+  id: local_actions_block
+  label: 'Primary admin actions'
+  provider: core
+  label_display: '0'
+visibility: {  }

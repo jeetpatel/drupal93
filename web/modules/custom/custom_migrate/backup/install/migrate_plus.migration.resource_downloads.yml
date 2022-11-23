@@ -1,0 +1,43 @@
+# Migrates records of downloads for each resource
+id: resource_downloads
+
+source:
+  plugin: csv
+  path: private://migration_csvs/resource_downloads.csv
+  ids: [Unique ID]
+
+destination:
+  plugin: 'table'
+  table_name: ti_user_resource_downloads
+  id_fields:
+    id:
+      type: integer
+      use_auto_increment: true
+  fields:
+    id: id
+    uid: uid
+    resource_id: resource_id
+    product_id: product_id
+    download_timestamp: download_timestamp
+    user_email: user_email
+
+process:
+  download_timestamp:
+    plugin: format_date
+    from_format: 'Y-m-d H:i:s'
+    to_format: 'U'
+    source: Access Date
+
+  product_id: Resource ID
+
+  uid:
+    plugin: merged_user_lookup
+    source: Member ID
+
+  resource_id:
+    - plugin: migration_lookup
+      migration: resource_attachments
+      source: Attachment ID
+    - plugin: skip_on_empty
+      method: row
+

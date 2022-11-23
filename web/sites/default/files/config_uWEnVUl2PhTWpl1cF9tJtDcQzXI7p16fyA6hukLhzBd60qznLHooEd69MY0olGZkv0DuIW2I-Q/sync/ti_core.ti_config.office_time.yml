@@ -1,0 +1,11 @@
+uuid: 00274a19-ff0e-4ac0-84ef-f2a227a543a6
+langcode: en
+status: true
+dependencies: {  }
+id: office_time
+label: 'Office Time'
+configuration: ''
+json_configuration: '{}'
+optional_value1: ''
+optional_value2: ''
+description: 'This is office time configuration'

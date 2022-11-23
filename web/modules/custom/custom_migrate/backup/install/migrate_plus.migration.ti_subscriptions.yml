@@ -1,0 +1,235 @@
+# Started to migrate data around subscriptions - essentially giving actual access.
+
+id: ti_subscriptions
+source:
+  plugin: subscriptions
+  constants:
+    number_of_logins: 1
+    title: 'Subscription for user: '
+    order_type_online: postal
+
+destination:
+  plugin: entity:subscription
+
+process:
+
+  customer_id:
+    plugin: skip_on_empty
+    source: Customer ID
+    method: row
+
+  created:
+    - plugin: default_value
+      default_value: '01/01/2000 00:00:00'
+      source: Date Added
+    - plugin: format_date
+      from_format: 'd/m/Y H:i:s'
+      to_format: 'U'
+      source: Date Added
+      from_timezone: UTC
+      to_timezone: UTC
+
+  changed:
+    - plugin: default_value
+      default_value: '01/01/2000 00:00:00'
+      source: Date Added
+    - plugin: format_date
+      source: Date Added
+      from_format: 'd/m/Y H:i:s'
+      to_format: 'U'
+      from_timezone: UTC
+      to_timezone: UTC
+
+  field_subject:
+    plugin: static_map
+    source: GroupID
+    map:
+      119: 3 # Science
+      106: 3 # Science
+      153: 3 # Science
+      111: 3 # Science
+      146: 3 # Science
+      160: 3 # Science
+      105: 3 # Science
+      104: 3 # Science
+      103: 3 # Science
+      133: 3 # Science
+      102: 3 # Science
+      101: 3 # Science
+      100: 3 # Science
+      99: 3 # Science
+      124: 3 # Science
+      112: 3 # Science
+      167: 3 # Science
+      141: 5650 # Primary
+      150: 5650 # Primary
+      139: 5650 # Primary
+      38: 5650 # Primary
+      39: 5650 # Primary
+      65: 5650 # Primary
+      41: 5650 # Primary
+      61: 5650 # Primary
+      138: 5650 # Primary
+      53: 5650 # Primary
+      128: 5650 # Primary
+      17: 5650 # Primary
+      164: 5650 # Primary
+      18: 5650 # Primary
+      19: 5650 # Primary
+      157: 5650 # Primary
+      20: 5650 # Primary
+      23: 5650 # Primary
+      21: 5650 # Primary
+      22: 5650 # Primary
+      122: 4 # Maths
+      165: 4 # Maths
+      108: 4 # Maths
+      117: 4 # Maths
+      75: 4 # Maths
+      76: 4 # Maths
+      77: 4 # Maths
+      78: 4 # Maths
+      79: 4 # Maths
+      80: 4 # Maths
+      81: 4 # Maths
+      82: 4 # Maths
+      107: 4 # Maths
+      131: 4 # Maths
+      151: 4 # Maths
+      158: 4 # Maths
+      144: 4 # Maths
+      70: 13 # Languages
+      152: 13 # Languages
+      109: 13 # Languages
+      110: 13 # Languages
+      145: 13 # Languages
+      74: 13 # Languages
+      73: 13 # Languages
+      72: 13 # Languages
+      71: 13 # Languages
+      69: 13 # Languages
+      68: 13 # Languages
+      67: 13 # Languages
+      118: 13 # Languages
+      159: 13 # Languages
+      123: 13 # Languages
+      166: 13 # Languages
+      132: 13 # Languages
+      89: 14 # History
+      87: 14 # History
+      88: 14 # History
+      113: 14 # History
+      90: 14 # History
+      120: 14 # History
+      114: 14 # History
+      85: 14 # History
+      134: 14 # History
+      86: 14 # History
+      147: 14 # History
+      125: 14 # History
+      154: 14 # History
+      161: 14 # History
+      168: 14 # History
+      83: 14 # History
+      84: 14 # History
+      115: 15 # Geography
+      162: 15 # Geography
+      116: 15 # Geography
+      155: 15 # Geography
+      148: 15 # Geography
+      169: 15 # Geography
+      135: 15 # Geography
+      126: 15 # Geography
+      121: 15 # Geography
+      98: 15 # Geography
+      97: 15 # Geography
+      91: 15 # Geography
+      96: 15 # Geography
+      95: 15 # Geography
+      92: 15 # Geography
+      94: 15 # Geography
+      93: 15 # Geography
+      170: 2 # English
+      127: 2 # English
+      1: 2 # English
+      163: 2 # English
+      156: 2 # English
+      149: 2 # English
+      140: 2 # English
+      40: 2 # English
+      2: 2 # English
+      3: 2 # English
+      4: 2 # English
+      5: 2 # English
+      6: 2 # English
+      7: 2 # English
+      8: 2 # English
+      12: 2 # English
+      13: 2 # English
+      14: 2 # English
+      36: 2 # English
+      37: 2 # English
+      48: 2 # English
+      64: 2 # English
+      52: 2 # English
+      57: 2 # English
+      51: # NZ?
+      50: # NZ?
+      49: # NZ?
+
+  field_subscription_type:
+    plugin: static_map
+    source: GroupID
+    map:
+      85: premium
+      120: school_department
+
+  field_expiry_date:
+    - plugin: format_date
+      source: Expiry Date
+      from_format: 'd/m/Y H:i:s'
+      to_format: 'Y-m-d\TH:i:s'
+      from_timezone: UTC
+      to_timezone: UTC
+
+  status_interim:
+    source: '@field_expiry_date'
+    plugin: ti_get_user_subscription_status
+
+  status:
+    plugin: extract
+    source: '@status_interim'
+    index:
+      - 0
+
+  field_status:
+    plugin: extract
+    source: '@status_interim'
+    index:
+      - 1
+
+  school_term:
+    plugin: migration_lookup
+    migration: schools
+    source: Customer ID
+    no_stub: true
+
+  user_id:
+    plugin: merged_user_lookup
+    source: MemberID
+
+  field_logins:
+    - plugin: merged_user_lookup
+      sensitive: true
+      source: MemberID
+    - plugin: update_user_school
+
+  name:
+    plugin: concat
+    source:
+      - constants/title
+      - '@user_id'
+
+  field_number_of_logins: constants/number_of_logins
+  field_order_type: constants/order_type_online
+

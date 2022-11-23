@@ -1,0 +1,193 @@
+# Migrates Blogs/Articles
+id: blogs
+
+source:
+  plugin: blogs
+
+  constants:
+    path_prefix: '/'
+    file_prefix: 'blog/'
+    file_destination: 'public://blog/'
+
+destination:
+  plugin: 'entity:node'
+  default_bundle: 'blog_article'
+
+process:
+
+  changed/value:
+    plugin: format_date
+    from_format: 'd/m/Y H:i:s'
+    to_format: 'U'
+    source: Date
+
+  created/value:
+    plugin: format_date
+    from_format: 'd/m/Y H:i:s'
+    to_format: 'U'
+    source: Date
+
+  status:
+    plugin: static_map
+    source: Active
+    map:
+      Yes: 0
+      No: 0
+
+  moderation_state:
+    plugin: static_map
+    source: Active
+    map:
+      Yes: 'draft'
+      No: 'draft'
+      #NULL: 'draft'
+
+  revision_log: Related resource ID
+
+  title: Title
+
+  image_source:
+    plugin: concat
+    source:
+      - constants/file_prefix
+      - Image
+
+  field_article_teaser_image:
+    - plugin: skip_on_empty
+      source: Image
+      method: process
+    - plugin: s3_file_import_print_mapping
+      bucket: teachit-legacy-files
+      access_key: AKIARIBY6NOC4SV4MHEX
+      secret_key: 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
+      region: 'eu-west-1'
+      source: '@image_source'
+      destination: constants/file_destination
+      alt: Image text
+
+  field_article_teaser_image/alt: Image text
+
+  'body/format':
+    plugin: default_value
+    default_value: 'full_html'
+  'body/value':
+    plugin: ti_body_concat
+    source:
+      - 'Content'
+      - '@field_article_teaser_image'
+      - 'Image text'
+
+  'field_article_teaser_text/format':
+    plugin: default_value
+    default_value: 'full_html'
+  'field_article_teaser_text/value': Standfirst
+
+  field_blog_article_tags:
+    - plugin: skip_on_empty
+      source: Keywords
+      method: process
+    - plugin: remove_char_string
+      source: Keywords
+      char: '|'
+    - plugin: explode
+      delimiter: '|'
+    - plugin: entity_lookup
+      entity_type: taxonomy_term
+      bundle: tags
+      value_key: name
+      ignore_case: true
+      access_check: false
+
+#  field_subject_tag:
+#    - plugin: str_replace
+#      source: Blog(s)
+#      search: ' blog'
+#      replace: ''
+#    - plugin: entity_lookup
+#      entity_type: taxonomy_term
+#      bundle: subject
+#      value_key: name
+#      ignore_case: true
+#      access_check: false
+
+  author_string:
+    plugin: str_replace
+    source: Author
+    search: '|'
+    replace: ' & '
+
+  author_paragraphs:
+    plugin: entity_generate_revision
+    entity_type: paragraph
+    bundle_key: type
+    bundle: author_information_block
+    value_key: field_author_full_name
+    source:
+      plugin: default_value
+      default_value: null
+    values:
+      field_author_full_name: Author
+
+  field_author_info/target_id:
+    plugin: extract
+    source: '@author_paragraphs'
+    index:
+      - 0
+  field_author_info/target_revision_id:
+    plugin: extract
+    source: '@author_paragraphs'
+    index:
+      - 1
+
+  blog:
+    plugin: static_map
+    source: Blog ID
+    map:
+      161: science
+      167: english
+      173: languages
+      174: geography
+      191: maths
+      221: cpd
+      222: ite
+      224: wellbeing
+      226: send
+      227: teaching-and-learning
+
+  blog_cleaned:
+    - plugin: str_replace
+      source: '@blog'
+      search: '-'
+      replace: ' '
+
+  field_subject_tag:
+    - plugin: entity_lookup
+      source: '@blog_cleaned'
+      entity_type: taxonomy_term
+      bundle: subject
+      bundle_key: vid
+      value_key: name
+      ignore_case: true
+      access_check: false
+
+  field_cpd:
+    - plugin: entity_lookup
+      source: '@blog_cleaned'
+      entity_type: taxonomy_term
+      bundle_key: vid
+      bundle: cpd_type
+      value_key: name
+      ignore_case: true
+      access_check: false
+
+  'path/pathauto':
+    plugin: default_value
+    default_value: 0 # Disable pathauto.
+  'path/alias':
+    - plugin: concat
+      source:
+        - 'constants/path_prefix'
+        - '@blog'
+        - 'constants/path_prefix'
+        - 'Friendly name'
+

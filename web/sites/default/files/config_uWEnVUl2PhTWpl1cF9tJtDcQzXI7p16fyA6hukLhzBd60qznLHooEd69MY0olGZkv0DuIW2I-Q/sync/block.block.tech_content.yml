@@ -1,0 +1,22 @@
+uuid: b36c2d82-7df4-4b73-8d15-81de5dc87b98
+langcode: en
+status: true
+dependencies:
+  module:
+    - system
+  theme:
+    - tech
+_core:
+  default_config_hash: 9EoWV2Lot6FVSr50t4hoKgiz1LIXYWNG-IIPYsWxBqo
+id: tech_content
+theme: tech
+region: content
+weight: -2
+provider: null
+plugin: system_main_block
+settings:
+  id: system_main_block
+  label: 'Main page content'
+  provider: system
+  label_display: '0'
+visibility: {  }

@@ -1,0 +1,40 @@
+# Creates redirect entites for files.
+
+id: resource_attachment_redirects
+source:
+  plugin: resources_attachments
+  batch_size: 10000
+  constants:
+    filetype_separator: '.'
+    dir_separator: '/'
+    file_prefix: 'attachments/'
+    file_destination: 'private://products/product_resources/migrated/'
+    redirect_status: '301'
+    internal: 'internal:/dashboard/download/'
+
+destination:
+  plugin: 'entity:redirect'
+
+process:
+
+  media_id:
+    plugin: migration_lookup
+    migration: resource_attachments
+    source: Attachment ID
+
+  redirect_redirect:
+    plugin: concat
+    source:
+      - constants/internal
+      - Resource ID
+      - constants/dir_separator
+      - '@media_id'
+
+  redirect_source:
+    plugin: concat
+    source:
+      - constants/file_prefix
+      - Filename
+
+  status_code: 'constants/redirect_status'
+

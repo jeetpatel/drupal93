@@ -1,0 +1,84 @@
+# Started to create payment entities
+
+id: ti_payments
+source:
+  plugin: csv
+  path: private://migration_csvs/orders/unifiedlineitemsshort.csv
+  ids: ['Unique Id', 'Transaction Id']
+  constants:
+    address_separator: ', '
+
+destination:
+  plugin: entity:commerce_order_item
+  default_bundle: 'default'
+
+process:
+
+  purchased_entity:
+    plugin: static_map
+    source: Product Id
+    map:
+      156: 66
+  #      226:
+  #      229:
+  #      361:
+  #      66:
+  #      67:
+  #      83:
+  #      90:
+  #      91:
+  #      98:
+  #      128:
+  #      146:
+  #      147:
+  #      222:
+  #      227:
+  #      343:
+  #      345:
+  #      456:
+  #      493:
+  #      72:
+  #      73:
+  #      119:
+  #      155:
+  #      273:
+  #      80:
+  #      81:
+  #      117:
+  #      154:
+  #      272:
+  #      283:
+  #      357:
+  #      61:
+  #      62:
+  #      120:
+  #      152:
+  #      271:
+  #      377:
+  #      58:
+  #      59:
+  #      118:
+  #      151:
+  #      269:
+  #      346:
+  #      68:
+  #      69:
+  #      123:
+  #      148:
+  #      149:
+  #      150:
+  #      268:
+  #      84:
+  #      85:
+  #      121:
+  #      153:
+  #      270:
+
+  quantity: Quantity
+  unit_price: Unitprice
+
+  order_id:
+    plugin: migration_lookup
+    migration: ti_orders
+    source: Transaction Id
+

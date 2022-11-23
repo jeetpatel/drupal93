@@ -1,0 +1,4 @@
+administer dcs configuration:
+  title: 'Administer dcs configuration'
+  description: 'Optional description.'
+  restrict access: true

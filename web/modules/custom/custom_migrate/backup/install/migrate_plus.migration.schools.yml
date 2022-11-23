@@ -1,0 +1,81 @@
+# Migrates barclaycard subscription transactions
+
+id: schools
+source:
+  plugin: schools
+  batch_size: 10000
+
+
+destination:
+  plugin: entity:taxonomy_term
+  default_bundle: 'school'
+
+process:
+
+  created:
+    - plugin: default_value
+      default_value: '01/01/2000 00:00:00'
+      source: Date Added
+    - plugin: format_date
+      from_format: 'd/m/Y H:i:s'
+      to_format: 'U'
+      source: Process Date
+      from_timezone: UTC
+      to_timezone: UTC
+
+  name:
+    - plugin: get
+      source:
+        - Name
+        - Schools Code
+    - plugin: callback
+      callable: array_filter
+    - plugin: callback
+      callable: 'current'
+
+  field_school_code: Schools Code
+  field_customer_number: Unique ID
+  field_aqa_centre_number: Centre Number
+  field_school_type:
+    plugin: static_map
+    source: School Type
+    default_value: 'Other'
+    map:
+      Secondary School: Secondary School
+      Further (Adult) Education College: Further (Adult) Education College
+      Independent School: Independent School
+      Special Education: Special Education
+      Higher Education: Other
+      Other: Other
+      Primary School: Primary school
+      Middle School: Middle school
+      Sixth Form College: Sixth Form College
+      University: University
+      Junior High School: Junior High School
+
+  contacts:
+    plugin: crm_school_address
+    source: Unique ID
+
+  parent:
+    plugin: migration_lookup
+    migration: schools
+    source: Parent ID
+
+
+#  field_billing_contact
+#  field_bill_mat
+#  field_english_department
+#  field_exam_board
+#  field_geography_department
+#  field_history_department
+#  field_languages_department
+#  field_maths_department
+#  field_mat_manager
+#  field_primary_department
+#  field_school_address
+#  field_manager
+#  field_school_telephone
+#
+#  field_science_department
+#  field_university_tutor_name

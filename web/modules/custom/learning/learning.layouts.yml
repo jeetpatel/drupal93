@@ -1,0 +1,28 @@
+one_column:
+  label: 'Learning One column'
+  category: 'Learning Layouts'
+  #template: templates/one-column
+  #theme_hook: 'learning_employee_template'
+  theme_hook: 'learning_onecolumn_template'
+  library: learning/learning-employee-layout
+  #class: '\Drupal\learning\OneColumnClass'
+  default_region: main
+  regions:
+    main:
+      label: Main content
+  icon_map:
+  - [square_one, square_two, square_three]
+  - [rectangle_vertical, rectangle_horizontal, rectangle_horizontal]
+  - [rectangle_vertical, square_four, square_five]
+two_column:
+  label: 'Learning Two column'
+  category: 'Learning Layouts'
+  #template: templates/two-column
+  class: '\Drupal\learning\TwoColumnClass'
+  theme_hook: 'learning_twocolumn_template'
+  default_region: main
+  regions:
+    main:
+      label: Main content
+    sidebar:
+      label: Sidebar

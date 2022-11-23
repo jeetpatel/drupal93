@@ -1,0 +1,39 @@
+uuid: ba5c7435-b797-40f6-a984-f0df8a093ac9
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.node.list
+    - field.field.node.employee.body
+    - field.field.node.employee.field_email_id
+    - field.field.node.employee.field_full_name
+    - node.type.employee
+  module:
+    - user
+id: node.employee.list
+targetEntityType: node
+bundle: employee
+mode: list
+content:
+  field_email_id:
+    weight: 2
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    type: basic_string
+    region: content
+  field_full_name:
+    weight: 1
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+  links:
+    weight: 0
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden:
+  body: true

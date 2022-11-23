@@ -1,0 +1,50 @@
+# Migrates 'ratings' for resources
+
+id: webform_submissions
+source:
+  plugin: cancellations
+
+destination:
+  plugin: 'entity:webform_submission'
+
+process:
+
+  langcode:
+    plugin: default_value
+    default_value: en
+
+  webform_id:
+    plugin: default_value
+    default_value: close_account
+
+  created:
+    - plugin: default_value
+      default_value: '01/01/1970 00:00:00'
+      source: Added
+    - plugin: format_date
+      from_format: 'd/m/Y H:i:s'
+      to_format: 'U'
+
+  completed:
+    - plugin: default_value
+      default_value: '01/01/1970 00:00:00'
+      source: Added
+    - plugin: format_date
+      from_format: 'd/m/Y H:i:s'
+      to_format: 'U'
+
+  changed:
+    - plugin: default_value
+      default_value: '01/01/1970 00:00:00'
+      source: Added
+    - plugin: format_date
+      from_format: 'd/m/Y H:i:s'
+      to_format: 'U'
+
+  uid:
+    plugin: merged_user_lookup
+    source: Member ID
+
+  in_draft:
+    plugin: default_value
+    default_value: 0

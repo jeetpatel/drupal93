@@ -1,0 +1,126 @@
+# Started to create commerce orders
+
+id: ti_orders
+source:
+  plugin: csv
+  path: /Users/ushahut/Sites/devdesktop/teachitsandbox-dev/docroot/sites/default/files/unifiedtransactionsshort.csv
+  ids: ['Unique Id']
+  constants:
+    address_separator: ', '
+
+destination:
+  plugin: entity:commerce_order
+  default_bundle: 'default'
+
+process:
+
+#  test:
+#    plugin: skip_on_value
+#    source: Test
+#    method: row
+#    value: Yes
+
+  id: Unique Id
+
+  uid:
+    plugin: migration_lookup
+    migration: ti_users
+    source: Member Id
+
+  created:
+    - plugin: default_value
+      default_value: '01/01/2000 00:00:00'
+      source: Orderdate
+    - plugin: format_date
+      from_format: 'd/m/Y H:i:s'
+      to_format: 'U'
+      source: Orderdate
+      from_timezone: UTC
+      to_timezone: UTC
+
+  placed:
+    - plugin: default_value
+      default_value: '01/01/2000 00:00:00'
+      source: Orderdate
+    - plugin: format_date
+      from_format: 'd/m/Y H:i:s'
+      to_format: 'U'
+      source: Orderdate
+      from_timezone: UTC
+      to_timezone: UTC
+
+  changed:
+    - plugin: default_value
+      default_value: '01/01/2000 00:00:00'
+      source: Orderdate
+    - plugin: format_date
+      from_format: 'd/m/Y H:i:s'
+      to_format: 'U'
+      source: Orderdate
+      from_timezone: UTC
+      to_timezone: UTC
+
+  state:
+    plugin: static_map
+    source: Complete
+    default_value: 'draft'
+    map:
+      No: fulfilment
+      Yes: completed
+
+  country_code:
+      plugin: country_code_lookup
+      source: County
+
+  addressline2:
+    plugin: concat
+    source:
+      - Address2
+      - Address3
+
+  billing_profile_entity:
+    plugin: entity_generate_revision
+    entity_type: profile
+    bundle_key: type
+    bundle: customer
+    value_key: created
+    source: null
+    values:
+      address/address_line1: Address1
+      address/address_line2: '@addressline2'
+      address/address_locality: City
+      address/administrative_area: County
+      address/country_code: '@country_code'
+      address/postal_code: Postcode
+      address/given_name: Firstname
+      address/family_name: Surname
+      field_email: Email
+      field_phone_number: Telephone
+      tax_number: Vatnumber
+
+  billing_profile/target_id:
+    plugin: extract
+    source: '@billing_profile_entity'
+    index:
+      - 0
+  billing_profile/target_revision_id:
+    plugin: extract
+    source: '@billing_profile_entity'
+    index:
+      - 1
+
+  order_items: # Remove this?
+    plugin: migration_lookup
+    migration: ti_lineitems
+    source_ids:
+      ti_lineitems:
+        Transaction Id: Unique Id
+
+  field_order_items:
+    plugin: entity_generate
+    entity_type: commerce_order_item
+    bundle_key: type
+    bundle: default
+    value_key: order_id
+    source: Unique ID
+

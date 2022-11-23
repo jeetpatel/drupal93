@@ -1,0 +1,5 @@
+name: Drupal coding standards
+type: module
+description: Drupal coding standards examples
+package: Custom
+core_version_requirement: ^8 || ^9

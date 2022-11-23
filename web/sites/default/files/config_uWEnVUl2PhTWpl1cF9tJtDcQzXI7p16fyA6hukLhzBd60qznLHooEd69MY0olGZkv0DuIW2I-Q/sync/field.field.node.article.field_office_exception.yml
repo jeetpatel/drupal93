@@ -1,0 +1,21 @@
+uuid: 77615885-249b-4a76-8048-57af92d67bec
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_office_exception
+    - node.type.article
+  module:
+    - office_hours
+id: node.article.field_office_exception
+field_name: field_office_exception
+entity_type: node
+bundle: article
+label: 'Office Exception'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: office_hours_exceptions

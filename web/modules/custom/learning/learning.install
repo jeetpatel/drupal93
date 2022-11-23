@@ -1,0 +1,90 @@
+<?php
+
+/**
+ * @file
+ */
+
+use Drupal\Core\Field\BaseFieldDefinition;
+
+/**
+ * Update learning entity.
+ *
+ * @return void
+ */
+function learning_update_90015() {
+  $field_storage_definition = BaseFieldDefinition::create('string')
+    ->setLabel(t('Subject'))
+    ->setDescription(t('Learning Subject.'))
+    ->setSettings([
+      'max_length' => 50,
+      'text_processing' => 0,
+    ])
+    ->setDefaultValue('')
+    ->setDisplayOptions('view', [
+      'label' => 'above',
+      'type' => 'string',
+      'weight' => -4,
+    ])
+    ->setDisplayOptions('form', [
+      'type' => 'string_textfield',
+      'weight' => -4,
+    ])
+    ->setDisplayConfigurable('form', TRUE)
+    ->setDisplayConfigurable('view', FALSE)
+    ->setRequired(TRUE);
+
+  \Drupal::entityDefinitionUpdateManager()
+    ->installFieldStorageDefinition('subject', 'learning_entity', 'learning_entity', $field_storage_definition);
+}
+
+/**
+ * {@inheritDoc}
+ */
+function learning_update_8004() {
+  $configEntity = \Drupal::entityTypeManager()
+    ->getStorage('node_type')
+    ->load('employee');
+  if (!$configEntity) {
+    return NULL;
+  }
+  $configEntity->set('name', 'Employee');
+  $configEntity->set('description', 'New updated description');
+  $configEntity->save();
+}
+
+/**
+ * Add in highlight field to all nodes.
+ */
+// function learning_update_9007() {
+//   $entity_type = \Drupal::service('entity_type.manager')->getDefinition('node');
+//   \Drupal::entityDefinitionUpdateManager()->updateEntityType($entity_type);
+// }
+
+/**
+ * Add 'Highlight' field to 'node' entities.
+ */
+function learning_update_90014() {
+  // Install the definition that this field had in
+  // \Drupal\node\Entity\Node::baseFieldDefinitions()
+  // at the time that this update function was written. If/when code is
+  // deployed that changes that definition, the corresponding module must
+  // implement an update function that invokes
+  // \Drupal::entityDefinitionUpdateManager()->updateFieldStorageDefinition()
+  // with the new definition.
+  $storage_definition = BaseFieldDefinition::create('boolean')
+      ->setLabel(t('Highlight'))
+      ->setDescription(t('Indicates if the last edit of a translation belongs to current revision.'))
+      ->setReadOnly(TRUE)
+      ->setRevisionable(TRUE)
+      ->setDisplayOptions('view', array(
+        'label' => 'above',
+        'type' => 'boolean',
+        'weight' => 5,
+      ))
+      ->setDisplayConfigurable('view', TRUE)
+      ->setDisplayConfigurable('form', TRUE);
+
+  \Drupal::entityDefinitionUpdateManager()
+    ->installFieldStorageDefinition('highlight', 'node', 'node', $storage_definition);
+}
+

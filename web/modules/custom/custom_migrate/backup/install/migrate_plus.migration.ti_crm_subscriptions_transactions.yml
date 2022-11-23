@@ -1,0 +1,156 @@
+# Migrates crm subscription transactions
+
+id: ti_crm_subscriptions_transactions
+source:
+  plugin: crm_transactions
+  batch_size: 10000
+
+  constants:
+    order_type_online: offline
+    quantity: 1
+    order_item: 66
+    store_id: 1
+    unified_prefix: 'U'
+    source_prefix: '!SourceStart:'
+    source: '5'
+    source_suffix: ':SourceEnd!'
+    invoice_prefix: '!Invoicestart:'
+    invoice_suffix: ':Invoiceend!'
+
+destination:
+  plugin: entity:commerce_order
+  default_bundle: 'default'
+
+process:
+
+  pending_status:
+    plugin: skip_on_value
+    source: Status
+    value: 'Pending'
+    method: row
+
+#  order_number:
+#    plugin: concat
+#    source:
+#      - constants/unified_prefix
+#      - Unified Transaction ID
+#
+#  store_id: constants/store_id
+#
+#  field_order_type: constants/order_type_online
+#
+#  created:
+#    - plugin: default_value
+#      default_value: '01/01/2000'
+#      source: Process Date
+#    - plugin: format_date
+#      from_format: 'd/m/Y'
+#      to_format: 'U'
+#      source: Process Date
+#      from_timezone: UTC
+#      to_timezone: UTC
+#
+#  placed:
+#    - plugin: default_value
+#      default_value: '01/01/2000'
+#      source: Process Date
+#    - plugin: format_date
+#      from_format: 'd/m/Y'
+#      to_format: 'U'
+#      source: Process Date
+#      from_timezone: UTC
+#      to_timezone: UTC
+#
+#  changed:
+#    - plugin: default_value
+#      default_value: '01/01/2000'
+#      source: Process Date
+#    - plugin: format_date
+#      from_format: 'd/m/Y'
+#      to_format: 'U'
+#      source: Process Date
+#      from_timezone: UTC
+#      to_timezone: UTC
+#
+#  state:
+#    plugin: static_map
+#    source: Status
+#    default_value: 'draft'
+#    map:
+#      Invoiced: completed
+#      Paid: completed
+#      Refunded: refunded
+#      Pending: pending
+#
+#  price:
+#    - plugin: get
+#      source:
+#        - Price
+#        - VAT
+#    - plugin: callback
+#      callable: array_filter
+#    - plugin: callback
+#      callable: array_sum
+#
+#  quantity: Quantity
+#  unit_price/currency_code: Currency
+#  unit_price/number: '@price'
+#  total_price/currency_code: Currency
+#  total_price/number: '@price'
+#  total_paid/currency_code: Currency
+#  total_paid/number: '@price'
+
+  uid:
+    - plugin: entity_lookup
+      entity_type: user
+      value_key: field_legacy_crm_contact_id
+      ignore_case: true
+      access_check: false
+      source: Contact ID
+
+#  mail:
+#    plugin: default_value
+#    default_value: null
+#
+#  # todo: this doesnt take into account the number of teachers yet as all history subs are < 10.
+#  purchased_entity:
+#    plugin: static_map
+#    source: Unified Product ID
+#    map:
+#      156: 72
+#      226: 72
+#      117: 35
+#      154: 72
+#      272: 72
+#      283: 72
+#      357: 72
+#      81: 35
+#      80: 35
+#      67: 35
+#
+#  order_items:
+#    plugin: entity_generate_dest_set
+#    entity_type: commerce_order_item
+#    bundle_key: type
+#    bundle: default
+#    value_key: order_id
+#    source: Unique ID
+#    values:
+#      purchased_entity: '@purchased_entity'
+#      title: Product Desc
+#      unit_price/currency_code: Currency
+#      unit_price/number: '@price'
+#      total_price/currency_code: Currency
+#      total_price/number: '@price'
+#      created: '@created'
+#      changed: '@created'
+#
+#  field_invoice_notes:
+#    plugin: concat
+#    source:
+#      - constants/source_prefix
+#      - constants/source
+#      - constants/source_suffix
+#      - constants/invoice_prefix
+#      - Invoice Number
+#      - constants/invoice_suffix

@@ -1,0 +1,35 @@
+<?php
+
+/**
+ * @file
+ * Functions to support theming in the km theme.
+ */
+
+/**
+ * Implements hook_preprocess_HOOK() for html.html.twig.
+ */
+function km_preprocess_html(&$variables) {
+  $computed_settings = [
+    'foo' => 'bar',
+    'baz' => 'qux',
+  ];
+  $variables['#attached']['drupalSettings']['km']['kmTheme'] = $computed_settings;
+}
+
+function km_preprocess_page_attachments() {
+  
+}
+
+/**
+ * Implements hook_preprocess_HOOK() for page.html.twig.
+ */
+function km_preprocess_page(&$variables) {
+
+}
+
+/**
+ * Implements hook_preprocess_HOOK() for node.html.twig.
+ */
+function km_preprocess_node(&$variables) {
+
+}

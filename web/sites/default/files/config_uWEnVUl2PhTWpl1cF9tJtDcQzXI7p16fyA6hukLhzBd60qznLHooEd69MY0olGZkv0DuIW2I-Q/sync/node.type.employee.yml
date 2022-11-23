@@ -1,0 +1,18 @@
+uuid: b07038d7-690c-4352-a82e-3b3fd7319408
+langcode: en
+status: true
+dependencies:
+  module:
+    - menu_ui
+third_party_settings:
+  menu_ui:
+    available_menus:
+      - main
+    parent: 'main:'
+name: Employee
+type: employee
+description: 'New updated description'
+help: ''
+new_revision: true
+preview_mode: 1
+display_submitted: false

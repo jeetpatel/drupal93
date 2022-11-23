@@ -1,0 +1,58 @@
+# Migrates 'ratings' for resources
+
+id: loves
+source:
+  plugin: loves
+  batch_size: 10000
+  constants:
+
+destination:
+  plugin: 'entity:comment'
+  default_bundle: 'reviews'
+
+process:
+
+  changed/value:
+    - plugin: default_value
+      default_value: '01/01/1970 00:00:00'
+      source: Loved date
+    - plugin: format_date
+      from_format: 'd/m/Y H:i:s'
+      to_format: 'U'
+
+  created/value:
+    - plugin: default_value
+      default_value: '01/01/1970 00:00:00'
+      source: Loved date
+    - plugin: format_date
+      from_format: 'd/m/Y H:i:s'
+      to_format: 'U'
+
+  status:
+    plugin: default_value
+    default_value: 1
+
+  uid:
+    plugin: merged_user_lookup
+    source: Member ID
+
+  entity_id: Resource ID
+
+  field_hide_user:
+    plugin: default_value
+    default_value: 1
+
+  field_rating:
+    plugin: default_value
+    default_value: 100
+
+  entity_type:
+    plugin: default_value
+    default_value: 'commerce_product'
+
+  field_name:
+    plugin: default_value
+    default_value: 'field_review'
+
+
+

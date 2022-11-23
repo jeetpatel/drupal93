@@ -1,0 +1,94 @@
+# Migrates barclaycard subscription transactions
+
+id: ti_bc_subscriptions_transaction_payments
+source:
+  plugin: bc_transactions
+  batch_size: 10000
+
+  constants:
+    payment_gateway: barclays_alias_checkout
+    payment_mode: live
+
+destination:
+  plugin: entity:commerce_payment
+  default_bundle: 'payment_default'
+
+process:
+
+  payment_gateway: constants/payment_gateway
+  payment_gateway_mode: constants/payment_mode
+
+  payment_method:
+    plugin: migration_lookup
+    migration: ti_bc_aliases
+    source: AliasID
+
+  order_id:
+    plugin: migration_lookup
+    migration: ti_bc_subscriptions_transactions
+    source: Unique ID
+
+  remote_id: Pay ID
+  remote_state: Status
+
+  amount/currency_code:
+    - plugin: skip_on_value
+      source: Status
+      method: process
+      value:
+        - Refunded
+        - Partially Refunded
+    - plugin: get
+      source: Currency
+  amount/number:
+    - plugin: skip_on_value
+      source: Status
+      method: process
+      value:
+        - Refunded
+        - Partially Refunded
+    - plugin: get
+      source: Amount
+
+  refunded_amount/currency_code:
+    - plugin: skip_on_value
+      source: Status
+      method: process
+      value:
+        - Paid
+        - Created
+        - Failed
+    - plugin: get
+      source: Currency
+  refunded_amount/number:
+    - plugin: skip_on_value
+      source: Status
+      method: process
+      value:
+        - Paid
+        - Created
+        - Failed
+    - plugin: get
+      source: Amount
+
+  state:
+    plugin: static_map
+    source: Status
+    default_value: 'new'
+    map:
+      Paid: completed
+      Created: new
+      Failed: new
+      Refunded: refunded
+      Partially Refunded: partially_refunded
+
+  authorized:
+    - plugin: default_value
+      default_value: '01/01/2000 00:00:00'
+      source: Created
+    - plugin: format_date
+      from_format: 'd/m/Y H:i:s'
+      to_format: 'U'
+      source: Created
+      from_timezone: UTC
+      to_timezone: UTC

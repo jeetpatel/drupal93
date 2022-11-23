@@ -1,0 +1,22 @@
+uuid: efc1741c-7afc-4db4-b3fc-b5312a19b53a
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_facebook
+    - node.type.article
+  module:
+    - facebook_comments
+id: node.article.field_facebook
+field_name: field_facebook
+entity_type: node
+bundle: article
+label: 'Facebook Comments'
+description: ''
+required: false
+translatable: false
+default_value:
+  - {  }
+default_value_callback: ''
+settings: {  }
+field_type: facebook_comments

@@ -1,0 +1,18 @@
+# Migrates CRM Orders - required for historical records
+# In some cases may be linkable to Unified Orders.
+
+id: crm_orders
+source:
+  plugin: csv
+  path: private://migration_csvs/crm/crmpurchases.csv
+  ids: ['Unique ID']
+  constants:
+    path_prefix: '/'
+
+destination:
+  plugin: ''
+  default_bundle: ''
+
+process:
+  id: Unique ID
+  #todo

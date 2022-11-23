@@ -1,0 +1,22 @@
+uuid: fdfb1295-6f21-46ac-bd12-d7a5ce7b4395
+langcode: en
+status: true
+dependencies:
+  module:
+    - system
+  theme:
+    - tech
+_core:
+  default_config_hash: KHQIJ7Vfl25lTjzIc7qIvnuistt-Mw2O0kG4jCofmkI
+id: tech_messages
+theme: tech
+region: content
+weight: -7
+provider: null
+plugin: system_messages_block
+settings:
+  id: system_messages_block
+  label: 'Status messages'
+  provider: system
+  label_display: '0'
+visibility: {  }

@@ -1,0 +1,7 @@
+name: ti_core
+type: module
+description: 'Provides a teachit configuration entity configuration entity.'
+package: Custom
+core: 8.x
+core_version_requirement: ^8 || ^9
+configure: entity.ti_config.collection

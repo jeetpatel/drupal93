@@ -1,0 +1,5 @@
+administer employee:
+  title: 'Administer employee settings'
+  restrict access: true
+access employee overview:
+  title: 'Access employee overview page'

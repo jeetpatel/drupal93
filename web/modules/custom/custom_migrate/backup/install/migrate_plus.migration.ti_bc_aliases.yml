@@ -1,0 +1,72 @@
+# Migrates barclaycard aliases
+
+id: ti_bc_aliases
+source:
+  plugin: bc_aliases
+  batch_size: 10000
+
+  constants:
+    payment_gateway: barclays_alias_checkout
+    payment_gateway_mode: test
+    reusable: 1
+
+destination:
+  plugin: entity:commerce_payment_method
+  default_bundle: credit_card
+
+process:
+
+  payment_gateway: constants/payment_gateway
+  payment_gateway_mode: constants/payment_gateway_mode
+  uid:
+    plugin: merged_user_lookup
+    source: Member ID
+
+  remote_id: Alias
+  reusable: constants/reusable
+
+  card_number:
+    plugin: substr
+    source: Cardno
+    start: -4
+
+  expiry_padded:
+    plugin: strpad
+    source: Expires
+    character: 0
+    length: 4
+    pad_type: left
+
+  card_exp_month:
+    source: '@expiry_padded'
+    plugin: format_date
+    from_format: 'my'
+    to_format: 'n'
+    from_timezone: UTC
+    to_timezone: UTC
+
+  card_exp_year:
+    source: '@expiry_padded'
+    plugin: format_date
+    from_format: 'my'
+    to_format: 'y'
+    from_timezone: UTC
+    to_timezone: UTC
+
+  expires:
+    source: '@expiry_padded'
+    plugin: format_date
+    from_format: 'my'
+    to_format: 'U'
+    from_timezone: UTC
+    to_timezone: UTC
+
+  card_type:
+    source: Brand
+    plugin: static_map
+    map:
+      VISA: visa
+      MasterCard: mastercard
+      Maestro: maestro
+      JCB: jcb
+      DISCOVER: discover

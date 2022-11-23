@@ -1,0 +1,14 @@
+{% if content %}
+  <div {{ attributes.addClass(settings.twocolumn_layout_classes) }}>
+    {% if content.main %}
+      <div {{ region_attributes.main.addClass('learning-twocolumn-content-main') }}>
+        {{ content.main }}
+      </div>
+    {% endif %}
+    {% if content.sidebar %}
+      <div {{ region_attributes.sidebar.addClass('learning-twocolumn-sidebar') }}>
+        {{ content.sidebar }}
+      </div>
+    {% endif %}
+  </div>
+{% endif %}

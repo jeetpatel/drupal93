@@ -1,0 +1,216 @@
+id: ti_users
+source:
+  plugin: members
+  batch_size: 50000
+  constants:
+    address_separator: ', '
+
+destination:
+  plugin: entity:user
+
+process:
+
+  field_migration_raw_data: raw_csv
+
+  child_accounts:
+    plugin: find_all_children_accounts
+    source: Member ID
+
+  uid: member_id
+
+  name: email
+  mail: email
+  pass: Password
+  init: Original Email
+
+  created:
+    - plugin: default_value
+      default_value: '01/01/1970 00:00:00'
+      source: Date Added
+    - plugin: format_date
+      from_format: 'd/m/Y H:i:s'
+      to_format: 'U'
+
+  changed:
+    - plugin: default_value
+      default_value: '01/01/1970 00:00:00'
+      source: Last Visit
+    - plugin: format_date
+      from_format: 'd/m/Y H:i:s'
+      to_format: 'U'
+
+  access:
+    - plugin: default_value
+      default_value: '01/01/1970 00:00:00'
+      source: Last Visit
+    - plugin: format_date
+      from_format: 'd/m/Y H:i:s'
+      to_format: 'U'
+
+  login:
+    - plugin: default_value
+      default_value: '01/01/1970 00:00:00'
+      source: Last Visit
+    - plugin: format_date
+      from_format: 'd/m/Y H:i:s'
+      to_format: 'U'
+
+  field_crm_customer_id: Customer ID
+
+  field_suspended:
+    plugin: static_map
+    source: Is Suspended
+    default_value: 0
+    map:
+      Yes: 1
+      No: 0
+
+  # Check TI-577
+  status:
+    plugin: user_status
+    source: Status
+
+  field_cleansed:
+    plugin: static_map
+    source: Status
+    default_value: 0
+    map:
+      Cleaned: 1
+
+  # Address
+  field_user_address/address_line1: Personal Address 1
+  field_user_address/address_line2:
+    plugin: concat
+    source:
+    - Personal Address 2
+    - constants/address_separator
+    - Personal Address 3
+  field_user_address/locality: Personal City
+  field_user_address/administrative_area: Personal County
+  field_user_address/country_code:
+    plugin: country_code_lookup
+    source: Personal Country
+  field_user_address/postal_code: Personal Postcode
+  field_user_address/given_name: Firstname
+  field_user_address/family_name: Surname
+
+  field_cr_received:
+    plugin: static_map
+    source: C&R Received
+    default_value: 0
+    map:
+      Yes: 1
+      No: 0
+
+  field_exclude_from_royalties:
+    plugin: static_map
+    source: Royalties
+    default_value: 1
+    map:
+      Yes: 0
+      No: 1
+
+  field_futurepay_id: FuturePay ID
+
+  field_newsletter_subcription:
+    plugin: static_map
+    source: Newsletter Exclude
+    default_value: 0
+    map:
+      Yes: 1
+      No: 0
+
+  field_job_title:
+    - plugin: callback
+      callable: strtolower
+      source: Position
+    - plugin: static_map
+      default_value: job_other
+      map:
+        teacher: job_teacher
+        head of department: job_head_department
+        headteacher: job_headteacher
+        head teacher: job_headteacher
+        tutor: job_private_tutor
+        parent: job_partner
+
+  field_previous_member_id: Previous Member ID
+
+  field_main_subject:
+    - plugin: callback
+      callable: strtolower
+      source: Original Site
+    - plugin: static_map
+      default_value: 5706
+      map:
+        teachit english: 2
+        teachit primary: 5650
+        teachit elt:
+        teachit citizenship:
+        teachit history: 14
+        teachit languages: 13
+        teachit maths: 4
+        teachit geography: 15
+        teachit science: 3
+
+  field_telephone_number: Personal Telephone
+  field_terms_and_conditions:
+    plugin: default_value
+    default_value: 1
+
+  roles_tags:
+    - plugin: callback
+      callable: strtolower
+      source: contributor
+    - plugin: role_lookup
+
+  roles:
+    plugin: extract
+    source: '@roles_tags'
+    index:
+      - 0
+
+#  field_email_types_data:
+#    - plugin: newsletter_subscription_lookup
+#      source: '@child_accounts'
+#
+#  field_email_types_english: '@field_email_types_data/english'
+#  field_email_types_geography: '@field_email_types_data/geography'
+#  field_email_types_history: '@field_email_types_data/history'
+#  field_email_types_languages: '@field_email_types_data/languages'
+#  field_email_types_maths: '@field_email_types_data/maths'
+#  field_email_types_primary: '@field_email_types_data/primary'
+#  field_email_types_science: '@field_email_types_data/science'
+
+  field_plain_school_data:
+    - plugin: get
+      source:
+        - Institution
+        - School Address 1
+        - School Address 2
+        - School Address 3
+        - School City
+        - School County
+        - School Country
+        - School Postcode
+        - School Telephone
+    - plugin: callback
+      callable: array_filter
+    - plugin: concat
+      delimiter: ', '
+    - plugin: skip_on_empty
+      method: process
+
+  field_school:
+    - plugin: skip_on_empty
+      source: Customer ID
+      method: process
+    - plugin: migration_lookup
+      migration: schools
+      no_stub: true
+
+  #field_overseas:
+  #user_picture
+  #field_previous_member_type:
+  #field_school:
+  #field_worldpay_transaction_id:

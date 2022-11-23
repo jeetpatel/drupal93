@@ -1,0 +1,59 @@
+# Migrates reviews for resources
+
+id: reviews
+source:
+  plugin: reviews
+  batch_size: 10000
+  constants:
+
+destination:
+  plugin: 'entity:comment'
+  default_bundle: 'reviews'
+
+process:
+
+  changed/value:
+    plugin: format_date
+    from_format: 'd/m/Y H:i:s'
+    to_format: 'U'
+    source: Date posted
+
+  created/value:
+    plugin: format_date
+    from_format: 'd/m/Y H:i:s'
+    to_format: 'U'
+    source: Date posted
+
+  status:
+    plugin: static_map
+    source: Status
+    default_value: 0
+    map:
+      Published: 1
+
+  field_marketing_permissions:
+    plugin: static_map
+    source: Marketing permissions
+    default_value: 0
+    map:
+      Yes: 1
+
+  uid:
+    plugin: merged_user_lookup
+    source: Member ID
+
+  entity_id: Resource ID
+
+  field_tell_us_what_you_think: Comment
+
+  entity_type:
+    plugin: default_value
+    default_value: 'commerce_product'
+
+  field_name:
+    plugin: default_value
+    default_value: 'field_review'
+
+  field_hide_stars:
+    plugin: default_value
+    default_value: 1

@@ -1,0 +1,129 @@
+# Migrates barclaycard subscription transactions
+
+id: ti_crm_subscriptions_transaction_payments_all_subjects
+source:
+  plugin: crm_transactions_all_subjects
+  batch_size: 10000
+
+  constants:
+    payment_gateway: invoice
+    payment_mode: live
+
+destination:
+  plugin: entity:commerce_payment
+  default_bundle: 'payment_default'
+
+process:
+
+  unified_transaction:
+    - plugin: unified_transaction_lookup
+      source: Unified Transaction ID
+
+  payment_gateway:
+    - plugin: default_value
+      default_value: 'DEFAULT'
+      source: PO Number
+    - plugin: substr
+      length: 2
+    - plugin: static_map
+      default_value: 'invoice'
+      map:
+        CC: cred
+
+  remote_id:
+    - plugin: skip_on_value
+      source: '@payment_gateway'
+      method: process
+      not_equals: true
+      value: cred
+    - plugin: skip_on_value
+      source: '@unified_transaction'
+      method: row
+      value: 'not_unified'
+    - plugin: extract
+      default: N/A
+      source: '@unified_transaction'
+      index:
+        - Reference
+
+  payment_gateway_mode: constants/payment_mode
+
+#  payment_method:
+#    plugin: migration_lookup
+#    migration: ti_bc_aliases
+#    source: AliasID
+
+  order_id:
+    plugin: migration_lookup
+    migration: ti_crm_subscriptions_transactions_all_subjects
+    source: Unique ID
+
+#  remote_id: Pay ID
+  remote_state: Status
+
+  price:
+    - plugin: get
+      source:
+        - Price
+        - VAT
+    - plugin: callback
+      callable: array_filter
+    - plugin: callback
+      callable: array_sum
+
+  amount/currency_code:
+    - plugin: skip_on_value
+      source: Status
+      method: process
+      value:
+        - Refunded
+    - plugin: get
+      source: Currency
+  amount/number:
+    - plugin: skip_on_value
+      source: Status
+      method: process
+      value:
+        - Refunded
+    - plugin: get
+      source: '@price'
+
+  refunded_amount/currency_code:
+    - plugin: skip_on_value
+      source: Status
+      method: process
+      value:
+        - Paid
+        - Invoiced
+    - plugin: get
+      source: Currency
+  refunded_amount/number:
+    - plugin: skip_on_value
+      source: Status
+      method: process
+      value:
+        - Paid
+        - Invoiced
+    - plugin: get
+      source: '@price'
+
+  state:
+    plugin: static_map
+    source: Status
+    default_value: 'new'
+    map:
+      Paid: completed
+      Invoiced: completed
+      Pending: new
+      Refunded: refunded
+
+  authorized:
+    - plugin: default_value
+      default_value: '01/01/2000'
+      source: Process Date
+    - plugin: format_date
+      from_format: 'd/m/Y'
+      to_format: 'U'
+      source: Process Date
+      from_timezone: UTC
+      to_timezone: UTC

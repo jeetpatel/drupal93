@@ -1,0 +1,182 @@
+learning.test_controller_test:
+  path: "/learning/test"
+  defaults:
+    _controller: '\Drupal\learning\Controller\TestController::test'
+    _title: "Test Controller"
+  requirements:
+    _permission: "access content"
+
+learning.test_menu.dynamic:
+  path: "/learning/test/dynamic/{name}"
+  defaults:
+    _controller: '\Drupal\learning\Controller\TestController::dynamicTest'
+    _title: "Dynamic Test Controller"
+  requirements:
+    _permission: "access content"
+
+learning.test_controller_params:
+  path: "/learning/test/{name}"
+  defaults:
+    _controller: '\Drupal\learning\Controller\TestController::paramTest'
+    _title: "Param Test Controller"
+  requirements:
+    _permission: "access content"
+
+learning.settings:
+  path: "/admin/config/system/settings"
+  defaults:
+    _title: "Settings"
+    _form: 'Drupal\learning\Form\SettingsForm'
+  requirements:
+    _permission: "administer site configuration"
+
+learning.learning_confirm:
+  path: "/learning/learning-confirm/{id}"
+  defaults:
+    _title: "Learning confirm"
+    _form: 'Drupal\learning\Form\LearningConfirmForm'
+  requirements:
+    _permission: "administer site configuration"
+
+learning.receipe:
+  path: "/learning/receipe/create"
+  defaults:
+    _title: "Create Receipe"
+    _form: 'Drupal\learning\Form\ReceipeForm'
+  requirements:
+    _permission: "access content"
+
+learning.form.conditional:
+  path: "/learning/form/conditional"
+  defaults:
+    _title: "Conditional Form"
+    _form: 'Drupal\learning\Form\ConditionalForm'
+  requirements:
+    _permission: "access content"
+
+learning.ajax_form:
+  path: "/learning/form/ajax"
+  defaults:
+    _form: '\Drupal\learning\Form\AjaxForm'
+    _title: "Ajax Form"
+  requirements:
+    _access: "TRUE"
+
+learning.ajax_link_callback:
+  path: "/learning/ajax-link-callback/{nojs}"
+  defaults:
+    _form: '\Drupal\learning\Form\AjaxForm'
+  requirements:
+    _permission: "access content"
+
+learning.feedback:
+  path: "/learning/feedback"
+  defaults:
+    _title: "Feedback Form"
+    _form: 'Drupal\learning\Form\FeedbackForm'
+  requirements:
+    _csrf_token: "TRUE"
+    #_entity_access: 'shortcut.delete'
+    #_permission: 'access content'
+
+learning.param:
+  path: "/learning/param/{node}"
+  defaults:
+    _title: "Param"
+    _form: 'Drupal\learning\Form\ParamForm'
+  requirements:
+    _permission: "access content"
+
+route_callbacks:
+  - '\Drupal\learning\Routing\ExampleRoutes::routes'
+
+learning.example.process_state_list:
+  path: "/learning/state-list"
+  defaults:
+    _controller: '\Drupal\learning\Controller\ExampleController::processStateData'
+    _title: "Process State List"
+  requirements:
+    _permission: "access content"
+
+learning.database.replica:
+  path: "/learning/database/replica"
+  defaults:
+    _controller: '\Drupal\learning\Controller\DatabaseController::replicaExamples'
+    _title: "Replica Examples"
+  requirements:
+    _permission: "access content"
+
+view.employee.page_1:
+  path: "/learning/database/replica1"
+  defaults:
+    _controller: '\Drupal\learning\Controller\DatabaseController::replicaExamples'
+    _title: "Replica Examples"
+  requirements:
+    _permission: "access content"
+
+learning.route_examples:
+  path: "/learning/routes/examples/{node}/{term}"
+  defaults:
+    _controller: "learning.get.learning:getName"
+    #_entity_form: node.default
+  methods: [GET, POST, PUT]
+  requirements:
+    _permission: "access content"
+    _module_dependencies: "node,ban"
+  options:
+    _maintenance_access: "TRUE"
+    _admin_route: FALSE
+    parameters:
+      node:
+        type: entity:node
+
+learning.view_entity:
+  path: "/learning/entity/{custom_entity_type}/{custom_entity_id}"
+  defaults:
+    _controller: '\Drupal\learning\Controller\ExampleController::viewEntity'
+  requirements:
+    _permission: "access content"
+  options:
+    parameters:
+      custom_entity_id:
+        type: entity_id
+      custom_entity_type:
+        type: entity_type
+
+learning.access_check:
+  path: "/learning/access/check"
+  defaults:
+    _controller: '\Drupal\learning\Controller\AccessCheckController::content'
+    _title: "Access Check"
+  requirements:
+    #_access: 'TRUE'
+    _custom_access: '\Drupal\learning\Controller\AccessCheckController::access'
+    #_permission: 'access content'
+
+learning.protected_content:
+  path: "/learning/protected/{node}"
+  defaults:
+    _controller: '\Drupal\learning\Controller\AccessCheckController::getProtectedContent'
+    _title: "Protected Content"
+  requirements:
+    _csrf_token: "TRUE"
+  options:
+    parameters:
+      node:
+        type: entity:node
+
+learning.custom_form:
+  path: "/learning/form/custom-form"
+  defaults:
+    _form: 'Drupal\learning\Form\CustomForm'
+    _title: "Custom Form"
+  requirements:
+    _access: "TRUE"
+#learning.custom_form:
+#  path: '/admin/learning/form/custom-form'
+#  defaults:
+#    _title: 'Custom Form 1'
+#    _form: 'Drupal\learning\Form\CustomForm'
+#  requirements:
+#    #_permission: 'access content'
+#    _access: 'TRUE'

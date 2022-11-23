@@ -1,0 +1,31 @@
+add learning entity entities:
+  title: 'Create new Learning entity entities'
+
+administer learning entity entities:
+  title: 'Administer Learning entity entities'
+  description: 'Allow to access the administration form to configure Learning entity entities.'
+  restrict access: true
+
+delete learning entity entities:
+  title: 'Delete Learning entity entities'
+
+edit learning entity entities:
+  title: 'Edit Learning entity entities'
+
+view published learning entity entities:
+  title: 'View published Learning entity entities'
+
+view unpublished learning entity entities:
+  title: 'View unpublished Learning entity entities'
+
+view all learning entity revisions:
+  title: 'View all Learning entity revisions'
+
+revert all learning entity revisions:
+  title: 'Revert all Learning entity revisions'
+  description: 'Role requires permission <em>view Learning entity revisions</em> and <em>edit rights</em> for learning entity entities in question or <em>administer learning entity entities</em>.'
+
+delete all learning entity revisions:
+  title: 'Delete all revisions'
+  description: 'Role requires permission to <em>view Learning entity revisions</em> and <em>delete rights</em> for learning entity entities in question or <em>administer learning entity entities</em>.'
+

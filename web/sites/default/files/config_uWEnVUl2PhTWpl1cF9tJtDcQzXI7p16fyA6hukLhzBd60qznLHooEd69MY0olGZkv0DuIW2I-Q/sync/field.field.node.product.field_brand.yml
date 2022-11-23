@@ -1,0 +1,29 @@
+uuid: d035b817-b6b5-405d-a28c-8da6ab21f8db
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_brand
+    - node.type.product
+    - taxonomy.vocabulary.brand
+id: node.product.field_brand
+field_name: field_brand
+entity_type: node
+bundle: product
+label: Brand
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:taxonomy_term'
+  handler_settings:
+    target_bundles:
+      brand: brand
+    sort:
+      field: name
+      direction: asc
+    auto_create: false
+    auto_create_bundle: ''
+field_type: entity_reference

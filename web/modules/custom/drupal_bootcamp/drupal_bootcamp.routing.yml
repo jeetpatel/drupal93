@@ -1,0 +1,7 @@
+entity.employee.settings:
+  path: 'admin/structure/employee'
+  defaults:
+    _form: '\Drupal\drupal_bootcamp\Form\EmployeeSettingsForm'
+    _title: 'Employee'
+  requirements:
+    _permission: 'administer employee'

@@ -1,0 +1,6 @@
+dcs.settings_form:
+  title: Drupal coding standards
+  description: Configure Drupal coding standards.
+  parent: system.admin_config_system
+  route_name: dcs.settings_form
+  weight: 10

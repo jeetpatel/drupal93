@@ -1,0 +1,31 @@
+entity.project_config_entity.collection:
+  path: '/admin/structure/project-config-entity'
+  defaults:
+    _entity_list: 'project_config_entity'
+    _title: 'Project Configuration Entity configuration'
+  requirements:
+    _permission: 'administer project_config_entity'
+
+entity.project_config_entity.add_form:
+  path: '/admin/structure/project_config_entity/add'
+  defaults:
+    _entity_form: 'project_config_entity.add'
+    _title: 'Add a project configuration entity'
+  requirements:
+    _permission: 'administer project_config_entity'
+
+entity.project_config_entity.edit_form:
+  path: '/admin/structure/project-config-entity/{project_config_entity}'
+  defaults:
+    _entity_form: 'project_config_entity.edit'
+    _title: 'Edit a project configuration entity'
+  requirements:
+    _permission: 'administer project_config_entity'
+
+entity.project_config_entity.delete_form:
+  path: '/admin/structure/project-config-entity/{project_config_entity}/delete'
+  defaults:
+    _entity_form: 'project_config_entity.delete'
+    _title: 'Delete a project configuration entity'
+  requirements:
+    _permission: 'administer project_config_entity'

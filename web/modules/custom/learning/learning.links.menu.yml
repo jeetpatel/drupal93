@@ -1,0 +1,56 @@
+
+# Learning entity menu items definition
+entity.learning_entity.collection:
+  title: 'Learning entity list'
+  route_name: entity.learning_entity.collection
+  description: 'List Learning entity entities'
+  parent: system.admin_structure
+  weight: 100
+
+learning_entity.admin.structure.settings:
+  title: 'Learning entity settings'
+  description: 'Configure Learning entity entities'
+  route_name: learning_entity.settings
+  parent: system.admin_structure
+
+learning.settings:
+  title: Settings
+  description: Setting of Learning module
+  parent: system.admin_config_system
+  route_name: learning.settings
+  route_parameters: { key: 'value' }
+  weight: 10
+
+learning.test_param.route_paramaters:
+  title: Menu Links Route Parameters
+  parent: system.admin_config_system
+  #url: http://www.google.com
+  route_name: learning.test_controller_params
+  route_parameters: { name: 'Jeet Patel' }
+  weight: 10
+
+learning.test_menu.dynamic:
+  title: Dynamic Test Menu
+  parent: system.admin_config_system
+  route_name: learning.test_menu.dynamic
+  route_parameters:
+    name: 'Links Menu'
+  weight: 10
+
+learning.external_menu:
+  title: External Page
+  description: 'External Page menu'
+  parent: system.admin_config_system
+  route_name: learning.external_menu
+  url: http://localhost/scripts/a1.php
+  #url: internal:/learning/test/dynamic
+  enabled: 1
+  weight: 11  
+  options:
+    query:
+      uid: 1
+    attributes:
+      target: _blank
+      class:
+        - some-class
+        - anotherclass

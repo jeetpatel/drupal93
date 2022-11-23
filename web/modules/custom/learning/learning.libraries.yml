@@ -1,0 +1,10 @@
+learning-employee-layout:
+  version: 1.x
+  css:
+    theme:
+      css/learning.css: {}
+  # js:
+  #   js/learning.js: {}
+  # dependencies:
+  #   - core/drupal
+  #   - core/drupalSettings

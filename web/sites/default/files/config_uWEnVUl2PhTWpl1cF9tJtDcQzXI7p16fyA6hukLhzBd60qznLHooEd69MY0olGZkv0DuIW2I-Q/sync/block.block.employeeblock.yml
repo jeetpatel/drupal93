@@ -1,0 +1,25 @@
+uuid: 76c4c308-0fd7-47ab-b4da-8b6aa7532130
+langcode: en
+status: true
+dependencies:
+  module:
+    - learning
+    - system
+  theme:
+    - tech
+id: employeeblock
+theme: tech
+region: content
+weight: 0
+provider: null
+plugin: learning_employee_block
+settings:
+  id: learning_employee_block
+  label: 'Employee Block'
+  provider: learning
+  label_display: visible
+visibility:
+  request_path:
+    id: request_path
+    pages: /employee
+    negate: false

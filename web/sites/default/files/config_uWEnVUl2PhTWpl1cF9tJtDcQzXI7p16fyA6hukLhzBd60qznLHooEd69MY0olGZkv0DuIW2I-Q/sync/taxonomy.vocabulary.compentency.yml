@@ -1,0 +1,8 @@
+uuid: a8683763-f9bc-4c20-82ba-1bc43e355757
+langcode: en
+status: true
+dependencies: {  }
+name: Compentency
+vid: compentency
+description: Compentency
+weight: 0

@@ -1,0 +1,24 @@
+<?php
+
+function custom_module_cron() {
+  $database = \Drupal::database();
+  $database = \Drupal::service('database');
+  $newsletterQueue = \Drupal::queue('cm_newsletter_queue');
+  // Query to fetch data.
+  $query = $database->select('employee_data', 'e');
+  $query->fields('e', ['name', 'email']);
+  $query->condition('status', 1);
+  $results = $query->execute();
+  $count = 0;
+  // Iterate data.
+  foreach ($results as $row) {
+    // Push data to queue.
+    $newsletterQueue->createItem([
+      'name' => $row->name,
+      'email_id' => $row->email,
+    ]);
+    $count++;
+  }
+  // DB log to add message.
+  \Drupal::logger('custom_module_cron')->info('Custom module cron Executed. Count Item::' . $count);
+}

@@ -1,0 +1,52 @@
+# Migrates CRM Notes - required for historical records
+
+id: school_notes
+source:
+  plugin: school_notes
+  batch_size: 50000
+
+  constants:
+    ReasonSeparator: 'Reason: '
+    DescriptionSeparator: '| Description: '
+    NotesSeparator: '| Notes: '
+
+destination:
+  plugin: 'entity:entity_message_log'
+
+process:
+
+  user_id:
+    - plugin: merged_user_lookup
+      source: Added by
+
+  field_school:
+    - plugin: migration_lookup
+      source: Customer ID
+      no_stub: true
+      migration: schools
+    - plugin: skip_on_empty
+      method: row
+
+  created:
+    plugin: format_date
+    from_format: 'd/m/Y H:i:s'
+    to_format: 'U'
+    source: Date
+  changed:
+    plugin: format_date
+    from_format: 'd/m/Y H:i:s'
+    to_format: 'U'
+    source: Date
+
+  field_description: Note
+
+  field_reason:
+    - plugin: default_value
+      default_value: 163576
+
+  field_important:
+    plugin: static_map
+    source: Important?
+    map:
+      Yes: 1
+      No: 0

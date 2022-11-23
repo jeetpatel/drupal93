@@ -1,0 +1,27 @@
+uuid: fe8400d3-1ffc-4178-8e7b-2f063c6e2291
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_sample_pdf
+    - node.type.product
+  module:
+    - file
+id: node.product.field_sample_pdf
+field_name: field_sample_pdf
+entity_type: node
+bundle: product
+label: 'Sample PDF'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  file_directory: '[date:custom:Y]-[date:custom:m]'
+  file_extensions: txt
+  max_filesize: ''
+  description_field: false
+  handler: 'default:file'
+  handler_settings: {  }
+field_type: file

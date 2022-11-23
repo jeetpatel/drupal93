@@ -1,0 +1,9 @@
+# Notes: https://docs.google.com/document/d/1APEYBWnhdPQFJre9jWQE2JtB158EG-Gd2wi6jIquaWE/edit
+id: teachit
+label: Teachit Migration.
+source_type: CSV
+
+dependencies:
+  enforced:
+    module:
+      - migrate_plus

@@ -1,0 +1,80 @@
+# Migrates Contributor profiles
+
+# When running this it may be helpful to ensure this always
+# returns TRUE web/modules/contrib/profile/src/ProfileAccessControlHandler.php:63
+# And comment out web/modules/custom/ti_user/ti_user.module:1088
+id: contributor_profiles
+source:
+  plugin: contributor_profiles
+  batch_size: 10000
+
+  constants:
+    dir_separator: '/'
+    file_prefix: 'contributor_profiles/'
+    file_destination: 'public://images/profile-pictures/'
+
+destination:
+  plugin: 'entity:profile'
+  default_bundle: 'contributor'
+
+process:
+
+  uid:
+    plugin: merged_user_lookup
+    source: Member ID
+
+  changed:
+    plugin: format_date
+    from_format: 'd/m/Y H:i:s'
+    to_format: 'U'
+    source: Last modified
+
+  created:
+    plugin: format_date
+    from_format: 'd/m/Y H:i:s'
+    to_format: 'U'
+    source: Created
+
+  field_twitter_id:
+    plugin: str_replace
+    search: "'"
+    replace: ""
+    source: Twitter handle
+
+  field_biography: Contributing reasons
+  field_display_name: Contributor name
+  field_reason_for_contributing: Biography
+
+  field_public_profile:
+    plugin: static_map
+    source: Publicity
+    map:
+      Yes: 1
+      No: 0
+
+  file_source:
+    plugin: concat
+    source:
+      - constants/file_prefix
+      - Photo filename
+
+  file_destination:
+    plugin: concat
+    source:
+      - constants/file_destination
+      - '@uid'
+      - constants/dir_separator
+
+  profile_image:
+    - plugin: skip_on_empty
+      source: Photo filename
+      method: process
+    - plugin: s3_file_import_print_mapping
+      bucket: teachit-legacy-files
+      access_key: AKIARIBY6NOC4SV4MHEX
+      secret_key: 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
+      region: 'eu-west-1'
+      source: '@file_source'
+      destination: '@file_destination'
+
+  field_profile_picture: '@profile_image'

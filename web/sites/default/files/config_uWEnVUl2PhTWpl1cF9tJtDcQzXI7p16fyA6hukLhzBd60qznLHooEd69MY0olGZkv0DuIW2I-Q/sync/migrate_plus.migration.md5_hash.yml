@@ -1,0 +1,35 @@
+uuid: d1819169-f910-4ed0-8ed0-469ee699dfad
+langcode: en
+status: true
+dependencies:
+  enforced:
+    module:
+      - custom_migrate
+_core:
+  default_config_hash: ZM09qsFRQi7Oew1I1aMn-GzVEafB8IKC9LDniVbob6s
+id: md5_hash
+class: null
+field_plugin_method: null
+cck_plugin_method: null
+migration_tags:
+  - migrate
+migration_group: md5hash
+label: 'MD5 Hash Algorithm'
+source:
+  plugin: md5_hash_data
+process:
+  pass: password
+  mail: mail
+  init: mail
+  status: status
+  roles: role_id
+  field_mobile: mobile
+  name: user_name
+  created: add_date
+  changed: '@created'
+  access: '@created'
+  login: '@created'
+destination:
+  plugin: 'entity:user'
+  md5_passwords: true
+migration_dependencies: {  }

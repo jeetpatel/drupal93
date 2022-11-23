@@ -1,0 +1,15 @@
+uuid: cb24f6d7-c454-4b1c-9fbf-e536e9b9168c
+name: 'Drupal 9.3.1 cex & cim command'
+mail: JEET.LAL1@TOTHENEW.COM
+slogan: ''
+page:
+  403: ''
+  404: ''
+  front: /node
+admin_compact_mode: false
+weight_select_max: 100
+langcode: en
+default_langcode: en
+_core:
+  default_config_hash: yTxtFqBHnEWxQswuWvkjE8mKw2t8oKuCL1q8KnfHuGE
+mail_notification: ''

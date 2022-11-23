@@ -1,0 +1,17 @@
+uuid: 172cbf6f-17cb-40fd-9280-5188168e5a4d
+langcode: en
+status: true
+dependencies:
+  enforced:
+    module:
+      - custom_migrate
+_core:
+  default_config_hash: uUrsRQd5wPkd_Sc0w4qofwH8gb1L6Qvpf2kn6ULObYQ
+id: custom_hash
+label: 'Custom Hash Algorithm'
+description: 'Custom Hash Algorithm migration.'
+source_type: 'Custom Hash (Wordpress)'
+module: null
+shared_configuration:
+  source:
+    key: wordpress

@@ -1,0 +1,29 @@
+uuid: 60ca6366-371d-4fcd-956e-d83303ef590f
+langcode: en
+status: true
+dependencies:
+  module:
+    - node
+    - office_hours
+id: node.field_office_exception
+field_name: field_office_exception
+entity_type: node
+type: office_hours_exceptions
+settings:
+  cardinality_per_day: '2'
+  time_format: G
+  element_type: office_hours_datelist
+  increment: '30'
+  comment: '1'
+  valhrs: 0
+  required_start: 0
+  required_end: 0
+  limit_start: ''
+  limit_end: ''
+module: office_hours
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

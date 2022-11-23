@@ -1,0 +1,89 @@
+# Migrates actual attachement files for resources
+
+id: resource_attachments
+source:
+  plugin: resources_attachments
+  batch_size: 10000
+  constants:
+    filetype_separator: '.'
+    dir_separator: '/'
+    file_prefix: 'attachments/'
+    file_destination: 'products/product_resources/migrated/'
+
+destination:
+  plugin: 'entity:media'
+  default_bundle: 'product_resource'
+
+process:
+
+  name: Filename
+
+  status:
+    plugin: static_map
+    source: Visible
+    map:
+      Yes: 1
+      No: 0
+
+  field_file_exclude_royalties:
+    plugin: static_map
+    source: Royalties
+    default_value: 0
+    map:
+      Yes: 0
+      No: 1
+
+  field_file_pages: Page count
+
+  file_source:
+    plugin: concat
+    source:
+      - constants/file_prefix
+      - Filename
+
+  file_destination:
+    plugin: concat
+    source:
+      - constants/file_destination
+      - Resource ID
+      - constants/dir_separator
+
+  field_media_document:
+    plugin: s3_file_import_print_mapping
+    bucket: teachit-legacy-files
+    access_key: AKIARIBY6NOC4SV4MHEX
+    secret_key: 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
+    region: 'eu-west-1'
+    source: '@file_source'
+    destination: '@file_destination'
+    dest_dir: 'products/product_resources/migrated/'
+
+  field_file_type:
+    plugin: static_map
+    source: File type
+    default_value: null
+    map:
+      xlsm: 5663
+      xls: 5663
+      xlsx: 5663
+      html: 5664
+      htm: 5664
+      mp3: 5665
+      mp4: 5666
+      audio: 5665
+      video: 5666
+      pdf: 5667
+      ppt: 5668
+      pptm: 5668
+      pptx: 5668
+      sb2: 5669
+      wma: 5670
+      wmv: 5671
+      doc: 5672
+      docx: 5672
+      zip: 5673
+      jpg: 5664
+      mov: 5666
+      wav: 5665
+      txt: 5672
+

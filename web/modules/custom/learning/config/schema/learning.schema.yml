@@ -1,0 +1,15 @@
+block.settings.learning_featurenews:
+  type: block_settings
+  label: 'FeatureNews block'
+  mapping:
+    foo:
+      type: string
+      label: Foo
+
+condition.plugin.learning_learning_condition:
+  type: condition.plugin
+  label: 'Learning Condition condition'
+  mapping:
+    age:
+      type: integer
+      label: Age

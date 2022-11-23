@@ -1,0 +1,172 @@
+# Migrates barclaycard subscription transactions
+
+id: ti_bc_subscriptions_transactions_all_subjects
+source:
+  plugin: bc_transactions
+  batch_size: 10000
+
+  constants:
+    order_type_online: online
+    quantity: 1
+    order_item: 66
+    store_id: 1
+    unified_prefix: 'U'
+
+destination:
+  plugin: entity:commerce_order
+  default_bundle: 'default'
+
+process:
+
+  order_number:
+    plugin: concat
+    source:
+      - constants/unified_prefix
+      - UTID
+
+  store_id: constants/store_id
+
+  field_order_type: constants/order_type_online
+
+  test:
+    plugin: skip_on_value
+    source: Test?
+    method: row
+    value: Yes
+
+  created:
+    - plugin: default_value
+      default_value: '01/01/2000 00:00:00'
+      source: Created
+    - plugin: format_date
+      from_format: 'd/m/Y H:i:s'
+      to_format: 'U'
+      source: Created
+      from_timezone: UTC
+      to_timezone: UTC
+
+  placed:
+    - plugin: default_value
+      default_value: '01/01/2000 00:00:00'
+      source: Created
+    - plugin: format_date
+      from_format: 'd/m/Y H:i:s'
+      to_format: 'U'
+      source: Created
+      from_timezone: UTC
+      to_timezone: UTC
+
+  changed:
+    - plugin: default_value
+      default_value: '01/01/2000 00:00:00'
+      source: Created
+    - plugin: format_date
+      from_format: 'd/m/Y H:i:s'
+      to_format: 'U'
+      source: Created
+      from_timezone: UTC
+      to_timezone: UTC
+
+  state:
+    plugin: static_map
+    source: Status
+    default_value: 'draft'
+    map:
+      Paid: completed
+      Created: draft
+      Failed: cancelled
+      Refunded: refunded
+      Partially Refunded: refunded
+
+  quantity: constants/quantity
+  unit_price/currency_code: Currency
+  unit_price/number: Amount Received
+  total_price/currency_code: Currency
+  total_price/number: Amount Received
+  total_paid/currency_code: Currency
+  total_paid/number: Amount Received
+
+  uid:
+    plugin: merged_user_lookup
+    source: Member ID
+
+  purchased_entity:
+    plugin: static_map
+    source: ProductID
+    map:
+      58: 31, # Maths
+      59: 31, # Maths
+      61: 33, # Languages
+      62: 33, # Languages
+      66: 30, # English
+      67: 30, # English
+      68: 29, # Primary
+      69: 29, # Primary
+      72: 34, # Geography
+      73: 34, # Geography
+      80: 35, # History
+      81: 35, # History
+      83: 30, # English
+      84: 32, # Science
+      85: 32, # Science
+      90: 30, # English
+      91: 30, # English
+      98: 30, # English
+      117: 35, # History
+      118: 31, # Maths
+      119: 34, # Geography
+      120: 33, # Languages
+      121: 32, # Science
+      123: 29, # Primary
+      128: 30, # English
+      146: 30, # English
+      147: 30, # English
+      148: 29, # Primary
+      149: 29, # Primary
+      150: 29, # Primary
+      151: 31, # Maths
+      152: 33, # Languages
+      153: 32, # Science
+      154: 35, # History
+      155: 34, # Geography
+      156: 34, # Geography
+      222: 30, # English
+      226: 34, # Geography
+      227: 30, # English
+      229: 30, # English,
+      268: 29, # Primary
+      269: 31, # Maths
+      270: 32, # Science
+      271: 33, # Languages
+      272: 35, # History
+      273: 34, # Geography
+      283: 35, # History
+      299: 35, # History
+      300: 35, # History
+      343: 30, # English
+      345: 30, # English
+      346: 31, # Maths
+      357: 35, # History
+      361: 34, # All
+      377: 33, # Languages
+      456: 30, # English
+      493: 30, # English
+      511: 32, # Science
+
+
+  order_items:
+    plugin: entity_generate_dest_set
+    entity_type: commerce_order_item
+    bundle_key: type
+    bundle: default
+    value_key: order_id
+    source: Unique ID
+    values:
+      purchased_entity: '@purchased_entity'
+      title: Product
+      unit_price/currency_code: Currency
+      unit_price/number: Amount Received
+      total_price/currency_code: Currency
+      total_price/number: Amount Received
+      created: '@created'
+      changed: '@created'

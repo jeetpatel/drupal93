@@ -1,0 +1,18 @@
+custom_module.project_config_entity.*:
+  type: config_entity
+  label: Project Configuration Entity
+  mapping:
+    id:
+      type: string
+      label: ID
+    label:
+      type: label
+      label: Label
+    uuid:
+      type: string
+    description:
+      type: string
+    configuration:
+      type: string
+    json_configuration:
+      type: string

@@ -1,0 +1,11 @@
+tyc_authenticated_user_mailtext: "Hi !username,\r\n\r\nThank you for commenting on: '!node_title'\r\n\r\nYou can view your comment here - !comment_url\r\n\r\n!site\r\n!uri"
+tyc_anonymous_user_mailtext: "Hi !username,\r\n\r\nThank you for commenting on: '!node_title'\r\n\r\nYou can view your comment here - !comment_url\r\n\r\n!site\r\n!uri"
+_core:
+  default_config_hash: C3gpcWcwptCGrpw3izvYWO4Kcu5uy_pndeTHQ1wVFJs
+tyc_registered_users: '1'
+tyc_anonymous_users: null
+tyc_content_types:
+  article: article
+  employee: employee
+  page: page
+  product: null

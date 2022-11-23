@@ -1,0 +1,38 @@
+id: ti_users_newsletters
+source:
+  plugin: newsletter_members
+  batch_size: 20000
+
+destination:
+  plugin: entity:user
+  overwrite_properties:
+    - field_email_types_english
+    - field_email_types_geography
+    - field_email_types_history
+    - field_email_types_languages
+    - field_email_types_maths
+    - field_email_types_primary
+    - field_email_types_science
+
+process:
+
+  uid: member_id
+
+  child_accounts:
+    plugin: find_all_children_accounts
+    source: member_id
+
+  field_email_types_data:
+    - plugin: newsletter_subscription_lookup
+      source: '@child_accounts'
+    - plugin: skip_on_empty
+      method: row
+
+  field_email_types_english: '@field_email_types_data/english'
+  field_email_types_geography: '@field_email_types_data/geography'
+  field_email_types_history: '@field_email_types_data/history'
+  field_email_types_languages: '@field_email_types_data/languages'
+  field_email_types_maths: '@field_email_types_data/maths'
+  field_email_types_primary: '@field_email_types_data/primary'
+  field_email_types_science: '@field_email_types_data/science'
+

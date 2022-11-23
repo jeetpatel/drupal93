@@ -1,0 +1,10 @@
+entity.employee.settings:
+  title: Employee
+  description: Configure an Employee entity type
+  route_name:  entity.employee.settings
+  parent: system.admin_structure
+entity.employee.collection:
+  title: Employees
+  description: List of employees
+  route_name: entity.employee.collection
+  parent: system.admin_content

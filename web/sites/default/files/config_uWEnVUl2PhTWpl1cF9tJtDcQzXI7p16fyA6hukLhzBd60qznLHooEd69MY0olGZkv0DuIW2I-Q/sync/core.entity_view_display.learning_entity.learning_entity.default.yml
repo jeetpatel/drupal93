@@ -1,0 +1,46 @@
+uuid: 48f46622-1223-493b-a638-950fd7b9d487
+langcode: en
+status: true
+dependencies:
+  module:
+    - learning
+    - user
+id: learning_entity.learning_entity.default
+targetEntityType: learning_entity
+bundle: learning_entity
+mode: default
+content:
+  credit_card:
+    label: above
+    type: string
+    weight: 0
+    region: content
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+  cvv:
+    label: above
+    type: number_integer
+    weight: 2
+    region: content
+    settings:
+      thousand_separator: ''
+      prefix_suffix: true
+    third_party_settings: {  }
+  name:
+    label: above
+    type: string
+    weight: 1
+    region: content
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+  user_id:
+    label: hidden
+    type: author
+    weight: 3
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden:
+  subject: true

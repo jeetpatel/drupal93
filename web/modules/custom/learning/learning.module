@@ -1,0 +1,122 @@
+<?php
+
+/**
+ * @file
+ * Contains learning.module.
+ */
+
+use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\Core\Block\BlockPluginInterface;
+use Drupal\Core\Entity\EntityTypeInterface;
+use Drupal\Core\Field\BaseFieldDefinition;
+
+/**
+ * Implements hook_help().
+ */
+function learning_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    // Main module help for the learning module.
+    case 'help.page.learning':
+      $output = '';
+      $output .= '<h3>' . t('About') . '</h3>';
+      $output .= '<p>' . t('My Awesome Module') . '</p>';
+      return $output;
+
+    default:
+  }
+}
+
+function learning_page_attachments(&$variables) {
+  $computed_settings = [
+    'foo' => 'bar',
+    'baz' => 'qux',
+  ];
+  //$build['#attached']['library'][] = 'your_module/library_name';
+  $variables['#attached']['drupalSettings']['learning']['setting'] = $computed_settings;
+}
+
+function learning_menu_links_discovered_alter(&$links) {
+  if (!empty($links)) {
+    $links['learning.test_param.route_paramaters']['title'] = new \Drupal\Core\StringTranslation\TranslatableMarkup('Alter Menu Links Route Title');
+    $links['learning.test_menu.dynamic_emp_view'] = [
+      #'route_name' => 'learning.test_menu.dynamic',
+      'route_name' => 'view.employee.page_1', // view.name.display_id
+      #'title' => 'Hook Alter Menu',
+      'title' => 'Employee List(Views)',
+      'parent' => 'system.admin_config_system'
+    ];
+    $open_settings_hash = '/learning/test/dynamic_new';
+    $links['learning.test_menu.dynamic_new'] = [
+      'title' => 'Hook Dynamic Menu',
+      'url' => "internal:" .  htmlspecialchars($open_settings_hash, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
+      'parent' => 'system.admin_config_system'
+    ];
+  }
+}
+
+/**
+ * Implements hook_theme().
+ */
+function learning_theme() {
+  return [
+    'learning_onecolumn_template' => [
+      'template' => 'onecolumn-template',
+      'render element' => 'content',
+      'base hook' => 'layout',
+    ],
+    'learning_twocolumn_template' => [
+      'template' => 'twocolumn-template',
+      'render element' => 'content',
+      'base hook' => 'layout',
+    ],
+    'state_list' => [
+      'theme' => 'state_list',
+      'variables' => ['state_data' => NULL, 'custom_message' => NULL],
+    ],
+    'learning' => [
+      'render element' => 'children',
+    ],
+  ];
+}
+
+function learning_entity_base_field_info_alter(&$fields, \Drupal\Core\Entity\EntityTypeInterface $entity_type) {
+  //kint($entity_type);
+  if ($entity_type->id() === 'learning_entity') {
+    //kint($fields);
+    if (isset($fields['cvv'])) {
+      // Use the ID as defined in the annotation of the constraint definition
+      $fields['cvv']->addConstraint('UniqueInteger', ['count' => 3]);
+    }
+  }
+}
+
+function learning_preprocess_page(&$variables) {
+  $route_name = \Drupal::routeMatch()->getRouteName();
+  //echo '<pre>'; print_r($route_name); echo '</pre>';
+}
+
+function learning_block_alter($variables) {
+  //kint($variables); die;
+}
+
+// function learning_entity_base_field_info(EntityTypeInterface $entity_type) {
+//   $fields = array();
+
+//   // Add a 'Highlight' base field to all node types.
+//   if ($entity_type->id() === 'node') {
+//     $fields['highlight'] = BaseFieldDefinition::create('boolean')
+//       ->setLabel(t('Highlight'))
+//       ->setDescription(t('Whether or not the node is highlighted.'))
+//       ->setRevisionable(TRUE)
+//       ->setTranslatable(TRUE)
+//       ->setDisplayOptions('form', array(
+//         'type' => 'boolean_checkbox',
+//         'settings' => array(
+//           'display_label' => TRUE,
+//         ),
+//       ))
+//       ->setDisplayConfigurable('form', TRUE);
+//   }
+
+//   return $fields;
+// }

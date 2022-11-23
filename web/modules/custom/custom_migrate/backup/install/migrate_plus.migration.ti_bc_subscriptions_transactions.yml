@@ -1,0 +1,116 @@
+# Migrates barclaycard subscription transactions
+
+id: ti_bc_subscriptions_transactions
+source:
+  plugin: bc_transactions
+  batch_size: 10000
+
+  constants:
+    order_type_online: online
+    quantity: 1
+    order_item: 66
+    store_id: 1
+    unified_prefix: 'U'
+
+destination:
+  plugin: entity:commerce_order
+  default_bundle: 'default'
+
+process:
+
+  order_number:
+    plugin: concat
+    source:
+      - constants/unified_prefix
+      - UTID
+
+  store_id: constants/store_id
+
+  field_order_type: constants/order_type_online
+
+  test:
+    plugin: skip_on_value
+    source: Test?
+    method: row
+    value: Yes
+
+  created:
+    - plugin: default_value
+      default_value: '01/01/2000 00:00:00'
+      source: Created
+    - plugin: format_date
+      from_format: 'd/m/Y H:i:s'
+      to_format: 'U'
+      source: Created
+      from_timezone: UTC
+      to_timezone: UTC
+
+  placed:
+    - plugin: default_value
+      default_value: '01/01/2000 00:00:00'
+      source: Created
+    - plugin: format_date
+      from_format: 'd/m/Y H:i:s'
+      to_format: 'U'
+      source: Created
+      from_timezone: UTC
+      to_timezone: UTC
+
+  changed:
+    - plugin: default_value
+      default_value: '01/01/2000 00:00:00'
+      source: Created
+    - plugin: format_date
+      from_format: 'd/m/Y H:i:s'
+      to_format: 'U'
+      source: Created
+      from_timezone: UTC
+      to_timezone: UTC
+
+  state:
+    plugin: static_map
+    source: Status
+    default_value: 'draft'
+    map:
+      Paid: completed
+      Created: draft
+      Failed: cancelled
+      Refunded: refunded
+      Partially Refunded: refunded
+
+  quantity: constants/quantity
+  unit_price/currency_code: Currency
+  unit_price/number: Amount Received
+  total_price/currency_code: Currency
+  total_price/number: Amount Received
+  total_paid/currency_code: Currency
+  total_paid/number: Amount Received
+
+  uid:
+    plugin: merged_user_lookup
+    source: Member ID
+
+  purchased_entity:
+    plugin: static_map
+    source: ProductID
+    map:
+      81: 35
+      80: 35
+      67: 35
+
+  order_items:
+    plugin: entity_generate_dest_set
+    entity_type: commerce_order_item
+    bundle_key: type
+    bundle: default
+    value_key: order_id
+    source: Unique ID
+    values:
+      purchased_entity: '@purchased_entity'
+      title: Product
+      unit_price/currency_code: Currency
+      unit_price/number: Amount Received
+      total_price/currency_code: Currency
+      total_price/number: Amount Received
+      created: '@created'
+      changed: '@created'

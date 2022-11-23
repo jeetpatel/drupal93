@@ -1,0 +1,17 @@
+uuid: 8b12f26c-dcc7-4e2c-967e-efc1d4182ce2
+langcode: en
+status: true
+dependencies:
+  enforced:
+    module:
+      - custom_migrate
+_core:
+  default_config_hash: 0NRwIj_Bb3LXcBgulSH8k2dC22-gWvjRhIjw9JcBMA8
+id: portable_phpass
+label: 'Portable Phpass Hashes Algorithm'
+description: 'Portable Phpass Hashes Algorithm.'
+source_type: 'Wordpress CMS'
+module: null
+shared_configuration:
+  source:
+    key: wordpress

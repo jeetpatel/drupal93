@@ -1,0 +1,102 @@
+<?php
+
+/**
+ * @file
+ * Install, update and uninstall functions for the Drupal coding standards module.
+ */
+
+/**
+ * Implements hook_install().
+ */
+function dcs_install() {
+  \Drupal::messenger()->addStatus(__FUNCTION__);
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function dcs_uninstall() {
+  \Drupal::messenger()->addStatus(__FUNCTION__);
+}
+
+/**
+ * Implements hook_schema().
+ */
+function dcs_schema() {
+  $schema['dcs_rules'] = [
+    'description' => 'Table description.',
+    'fields' => [
+      'id' => [
+        'type' => 'serial',
+        'not null' => TRUE,
+        'description' => 'Primary Key: Unique record ID.',
+      ],
+      'uid' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'The {users}.uid of the user who created the record.',
+      ],
+      'title' => [
+        'type' => 'varchar_ascii',
+        'length' => 200,
+        'not null' => TRUE,
+        'default' => '',
+        'description' => 'Type of the record.',
+      ],
+      'body' => [
+        'type' => 'blob',
+        'not null' => TRUE,
+        'size' => 'big',
+        'description' => 'The arbitrary data for the item.',
+      ],
+      'url' => [
+        'type' => 'varchar_ascii',
+        'length' => 150,
+        'not null' => TRUE,
+        'default' => '',
+        'description' => 'URL text.',
+      ],
+      'status' => [
+        'description' => 'Boolean indicating whether this record is active.',
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+        'size' => 'tiny',
+      ],
+      'created' => [
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'Timestamp when the record was created.',
+      ],
+    ],
+    'primary key' => ['id'],
+    'indexes' => [
+      'uid' => ['uid'],
+      'status' => ['status'],
+    ],
+  ];
+
+  return $schema;
+}
+
+/**
+ * Implements hook_requirements().
+ */
+function dcs_requirements($phase) {
+  $requirements = [];
+
+  if ($phase == 'runtime') {
+    $value = mt_rand(0, 100);
+    $requirements['dcs_status'] = [
+      'title' => t('Drupal coding standards status'),
+      'value' => t('Drupal coding standards value: @value', ['@value' => $value]),
+      'severity' => $value > 50 ? REQUIREMENT_INFO : REQUIREMENT_WARNING,
+    ];
+  }
+
+  return $requirements;
+}

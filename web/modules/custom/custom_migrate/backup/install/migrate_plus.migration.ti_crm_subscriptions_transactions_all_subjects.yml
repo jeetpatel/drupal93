@@ -1,0 +1,197 @@
+# Migrates crm subscription transactions
+
+id: ti_crm_subscriptions_transactions_all_subjects
+source:
+  plugin: crm_transactions_all_subjects
+  batch_size: 10000
+
+  constants:
+    order_type_online: offline
+    quantity: 1
+    order_item: 66
+    store_id: 1
+    unified_prefix: 'U'
+    source_prefix: '!SourceStart:'
+    source: '5'
+    source_suffix: ':SourceEnd!'
+    invoice_prefix: '!Invoicestart:'
+    invoice_suffix: ':Invoiceend!'
+
+destination:
+  plugin: entity:commerce_order
+  default_bundle: 'default'
+
+process:
+
+  pending_status:
+    plugin: skip_on_value
+    source: Status
+    value: 'Pending'
+    method: row
+
+  order_number:
+    plugin: concat
+    source:
+      - constants/unified_prefix
+      - Unified Transaction ID
+
+  store_id: constants/store_id
+
+  field_order_type: constants/order_type_online
+
+  created:
+    - plugin: default_value
+      default_value: '01/01/2000'
+      source: Process Date
+    - plugin: format_date
+      from_format: 'd/m/Y'
+      to_format: 'U'
+      source: Process Date
+      from_timezone: UTC
+      to_timezone: UTC
+
+  placed:
+    - plugin: default_value
+      default_value: '01/01/2000'
+      source: Process Date
+    - plugin: format_date
+      from_format: 'd/m/Y'
+      to_format: 'U'
+      source: Process Date
+      from_timezone: UTC
+      to_timezone: UTC
+
+  changed:
+    - plugin: default_value
+      default_value: '01/01/2000'
+      source: Process Date
+    - plugin: format_date
+      from_format: 'd/m/Y'
+      to_format: 'U'
+      source: Process Date
+      from_timezone: UTC
+      to_timezone: UTC
+
+  state:
+    plugin: static_map
+    source: Status
+    default_value: 'draft'
+    map:
+      Invoiced: completed
+      Paid: completed
+      Refunded: refunded
+      Pending: pending
+
+  price:
+    - plugin: get
+      source:
+        - Price
+        - VAT
+    - plugin: callback
+      callable: array_filter
+    - plugin: callback
+      callable: array_sum
+
+  quantity: Quantity
+  unit_price/currency_code: Currency
+  unit_price/number: '@price'
+  total_price/currency_code: Currency
+  total_price/number: '@price'
+  total_paid/currency_code: Currency
+  total_paid/number: '@price'
+
+  uid:
+    - plugin: entity_lookup
+      entity_type: user
+      value_key: field_legacy_crm_contact_id
+      ignore_case: true
+      access_check: false
+      source: Contact ID
+
+  # todo: this doesnt take into account the number of teachers yet as all history subs are < 10.
+  purchased_entity:
+    plugin: static_map
+    source: Unified Product ID
+    map:
+      156: 66 # Geography/Department
+      226: 34 # Geography/Individual
+      229: 42 # English/Department
+      361: 34 # Geography/Individual
+      66: 30 # English/Individual
+      67: 30 # English/Individual
+      83: 30 # English/Individual
+      90: 30 # English/Individual
+      91: 30 # English/Individual
+      98: 30 # English/Individual
+      128: 30 # English/Individual
+      146: 42 # English/Department
+      147: 42 # English/Department
+      222: 42 # English/Department
+      227: 42 # English/Department
+      343: 42 # English/Department
+      345: 42 # English/Department
+      456: 42 # English/Department
+      493: 30 # English/Individual
+      72: 34 # Geography/Individual
+      73: 34 # Geography/Individual
+      119: 34 # Geography/Individual
+      155: 66 # Geography/Department
+      273: 66 # Geography/Department
+      80: 35 # History/Individual
+      81: 35 # History/Individual
+      117: 35 # History/Individual
+      154: 72 # History/Department
+      272: 72 # History/Department
+      283: 66 # Geography/Department
+      357: 66 # Geography/Department
+      61: 33 # Languages/Individual
+      62: 33 # Languages/Individual
+      120: 33 # Languages/Individual
+      152: 60 # Languages/Department
+      271: 60 # Languages/Department
+      377: 60 # Languages/Department
+      58: 31 # Maths/Individual
+      59: 31 # Maths/Individual
+      118: 31 # Maths/Individual
+      151: 48 # Maths/Department
+      269: 48 # Maths/Department
+      346: 48 # Maths/Department
+      68: 29 # Primary/Individual
+      69: 29 # Primary/Individual
+      123: 29 # Primary/Individual
+      148: 36 # Primary/Department
+      149: 36 # Primary/Department
+      150: 36 # Primary/Department
+      268: 36 # Primary/Department
+      84: 32 # Science/Individual
+      85: 32 # Science/Individual
+      121: 32 # Science/Individual
+      153: 54 # Science/Department
+      270: 54 # Science/Department
+
+  order_items:
+    plugin: entity_generate_dest_set
+    entity_type: commerce_order_item
+    bundle_key: type
+    bundle: default
+    value_key: order_id
+    source: Unique ID
+    values:
+      purchased_entity: '@purchased_entity'
+      title: Product Desc
+      unit_price/currency_code: Currency
+      unit_price/number: '@price'
+      total_price/currency_code: Currency
+      total_price/number: '@price'
+      created: '@created'
+      changed: '@created'
+
+  field_invoice_notes:
+    plugin: concat
+    source:
+      - constants/source_prefix
+      - constants/source
+      - constants/source_suffix
+      - constants/invoice_prefix
+      - Invoice Number
+      - constants/invoice_suffix

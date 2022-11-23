@@ -1,0 +1,5 @@
+entity.ti_config.overview:
+  title: Teachit Configuration Overview
+  parent: system.admin_structure
+  description: 'List of teachit configuration entities to extend site functionality.'
+  route_name: entity.ti_config.collection

@@ -1,0 +1,14 @@
+entity.learning_entity.add_form:
+  route_name: entity.learning_entity.add_form
+  title: 'Add Learning entity'
+  appears_on:
+    - entity.learning_entity.collection
+    
+entity.employee.action.add_employee:
+  route_name: node.add
+  route_parameters:
+    node_type: 'employee'
+  title: 'Add Employee'
+  class: '\Drupal\learning\Plugin\Menu\LocalAction\CustomLocalAction'
+  appears_on:
+    - system.admin_content

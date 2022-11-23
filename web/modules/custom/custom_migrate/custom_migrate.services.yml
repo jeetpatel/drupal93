@@ -1,0 +1,4 @@
+services:
+  password:
+    class: Drupal\custom_migrate\Services\CustomMigratePasswordService
+    arguments: [16]

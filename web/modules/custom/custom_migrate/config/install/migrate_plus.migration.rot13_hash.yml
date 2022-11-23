@@ -1,0 +1,34 @@
+id: rot13_hash
+label: ROT13 Hash (str_rot13())
+migration_group: custom_hash
+source:
+  plugin: embedded_data
+  data_rows:
+    -
+      user_id: 1
+      name: crmportal
+      mail: crmportal@gmail.com
+      old_hash: 'Pezcbegny@123456'
+      status: 1
+      created_date: 1645185527
+  constants:
+    hash_type_prefix: '$ROT13$'
+  ids:
+    user_id:
+      type: integer
+process:
+  name: name
+  mail: mail
+  init: mail
+  pass:
+    plugin: concat
+    source:
+      - constants/hash_type_prefix
+      - old_hash
+  status: status
+  created: created_date
+  changed: '@created'
+  access: '@created'
+  login: '@created'
+destination:
+  plugin: entity:user

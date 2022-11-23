@@ -1,0 +1,32 @@
+dcs.example:
+  path: '/dcs/example'
+  defaults:
+    _title: 'Example'
+    _controller: '\Drupal\dcs\Controller\DcsController::build'
+  requirements:
+    _permission: 'access content'
+
+dcs.settings_form:
+  path: '/admin/config/system/dcs'
+  defaults:
+    _title: 'Drupal coding standards settings'
+    _form: 'Drupal\dcs\Form\SettingsForm'
+  requirements:
+    _permission: 'administer dcs configuration'
+
+dcs.rules.list:
+  path: '/dcs/rules/list'
+  defaults:
+    _title: 'List of Drupal Coding Standards Rules'
+    _controller: '\Drupal\dcs\Controller\DcsController::listRules'
+  requirements:
+    _permission: 'administrator'
+
+
+dcs.rules.create:
+  path: '/dcs/rules/create'
+  defaults:
+    _title: 'Create Rules'
+    _form: 'Drupal\dcs\Form\RulesCreateForm'
+  requirements:
+    _permission: 'administrator'

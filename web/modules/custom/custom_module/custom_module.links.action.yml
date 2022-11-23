@@ -1,0 +1,5 @@
+entity.project_config_entity.add_form:
+  route_name: 'entity.project_config_entity.add_form'
+  title: 'Add project configuration entity'
+  appears_on:
+    - entity.project_config_entity.collection

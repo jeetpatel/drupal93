@@ -1,0 +1,18 @@
+# Migrates CRM Products - required for historical records
+# In some cases may be linkable to Unified products.
+
+id: crm_products
+source:
+  plugin: csv
+  path: private://migration_csvs/crm/crmproducts.csv
+  ids: ['Unique ID']
+  constants:
+    path_prefix: '/'
+
+destination:
+  plugin: ''
+  default_bundle: ''
+
+process:
+  id: Unique ID
+  #todo

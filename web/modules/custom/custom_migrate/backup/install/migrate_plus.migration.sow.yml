@@ -1,0 +1,53 @@
+# SOW - not required for history
+
+id: sow
+source:
+  plugin: csv
+  path: private://migration_csvs/sow.csv
+  ids: [ID, Member ID]
+
+destination:
+  plugin: 'table'
+  table_name: routemap_saves
+  id_fields:
+    id:
+      type: integer
+      use_auto_increment: true
+  fields:
+    id: id
+    memberid: memberid
+    title: title
+    data: data
+    archived: archived
+    accessed: accessed
+    starty: starty
+    tilesetid: tilesetid
+    vkey: vkey
+    subjectid: subjectid
+process:
+  title: Title
+  data: Data
+  archived:
+    plugin: static_map
+    source: Archived
+    map:
+      Yes: 1
+      No: 0
+  accessed:
+    plugin: format_date
+    from_format: 'd/m/Y H:i:s'
+    to_format: 'U'
+    source: Accessed
+  starty: Start Y
+  tilesetid: Tile set id
+  vkey: vkey
+  subjectid:
+    plugin: static_map
+    source: siteid
+    map:
+      8: 3
+      10: 15
+
+  memberid:
+    plugin: merged_user_lookup
+    source: Member ID

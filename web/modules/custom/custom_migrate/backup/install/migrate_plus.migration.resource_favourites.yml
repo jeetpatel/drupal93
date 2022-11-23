@@ -1,0 +1,33 @@
+# Migrates favourites into Drupal flags
+
+id: resource_favourites
+source:
+  plugin: favourites
+
+destination:
+  plugin: 'entity:flagging'
+  default_bundle: 'favourite'
+
+process:
+
+  uid:
+    plugin: merged_user_lookup
+    source: MemberID
+
+  flagged_entity: ResourceID
+
+  entity_id: ResourceID
+
+  global:
+    plugin: default_value
+    default_value: 0
+
+  created/value:
+    plugin: format_date
+    from_format: 'd/m/Y H:i:s'
+    to_format: 'U'
+    source: Date added
+
+  entity_type:
+    plugin: default_value
+    default_value: 'commerce_product'

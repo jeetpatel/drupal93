@@ -1,0 +1,29 @@
+uuid: d00ccf28-b535-4b01-b82a-88c78ff2fe0e
+langcode: en
+status: true
+dependencies:
+  module:
+    - facebook_comments
+    - system
+  theme:
+    - tech
+id: facebookcomments
+theme: tech
+region: content
+weight: 0
+provider: null
+plugin: facebook_comments
+settings:
+  id: facebook_comments
+  label: 'Facebook comments'
+  provider: facebook_comments
+  label_display: visible
+  facebook_comments_style: light
+  facebook_comments_width: '208'
+  facebook_comments_width_fluid: 1
+  facebook_comments_amount: '5'
+visibility:
+  request_path:
+    id: request_path
+    pages: /employee
+    negate: false

@@ -1,0 +1,81 @@
+# Migrates CRM Orders - required for historical records
+# In some cases may be linkable to Unified Orders.
+
+id: user_history
+source:
+  plugin: user_history
+  batch_size: 10000
+
+  constants:
+    ReasonSeparator: 'Reason: '
+    DescriptionSeparator: '| Description: '
+    NotesSeparator: '| Notes: '
+
+destination:
+  plugin: 'entity:entity_message_log'
+
+process:
+
+  user_id:
+    - plugin: get
+      source:
+        - Done by Member ID
+        - Member ID
+    - plugin: callback
+      callable: array_filter
+    - plugin: callback
+      callable: 'current'
+    - plugin: merged_user_lookup
+      skip: true
+    - plugin: skip_on_empty
+      method: row
+
+  field_user:
+    plugin: merged_user_lookup
+    source: Member ID
+
+  created:
+    plugin: format_date
+    from_format: 'd/m/Y H:i:s'
+    to_format: 'U'
+    source: Event Date
+  changed:
+    plugin: format_date
+    from_format: 'd/m/Y H:i:s'
+    to_format: 'U'
+    source: Event Date
+
+  field_description:
+    plugin: concat
+    source:
+      - constants/ReasonSeparator
+      - Reason
+      - constants/DescriptionSeparator
+      - Description
+      - constants/NotesSeparator
+      - Notes
+
+  field_reason:
+    - plugin: static_map
+      bypass: TRUE
+      source: Reason
+      map:
+        'Other': 66546
+        'Account Manually Renewed': 66546
+        'Manual New User': 66546
+        'WorldPay Registration': 66546
+        'FuturePay Callback': 66546
+        'Suspended due to cancellation': 66546
+        'Group Incorrect': 66546
+        'Add/remove language bolton': 66546
+        'Expiry Date Incorrect': 66546
+        'Suspended due to non-payment': 66546
+        'Unsuspended due to payment': 66546
+        'User Deleted': 66546
+        'Suspended - did not resubscribe': 66546
+        'Add/remove other bolton': 66546
+        'Suspended due to abuse': 66546
+        'Paypal purchase': 66546
+        'Barclaycard': 66546
+        'Account activated manually': 66546
+

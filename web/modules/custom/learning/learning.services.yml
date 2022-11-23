@@ -1,0 +1,47 @@
+services:
+  learning.custom_twig.extension:
+    class: Drupal\learning\TwigExtension
+    tags:
+      - {name: twig.extension}
+
+  learning.twig.extension:
+    class: Drupal\learning\TwigExtension\FilterTwigExtension
+    arguments: ['@renderer', '@database']
+    tags:
+      - { name: twig.extension }
+
+  learning.get.learning:
+    class: Drupal\learning\Services\LearningService
+    arguments: ['@database']
+      
+  upload.excel:
+    class: Drupal\learning\Services\UploadExcelService
+    arguments: ['@file_system']
+
+  learning.alter_user_login:
+    class: Drupal\learning\Routing\AlterRouteSubscriber
+    tags:
+      - {name: event_subscriber}
+  
+  learning.custom_service:
+    class: Drupal\learning\Services\CustomService
+    arguments: ['@database']
+
+  learning.custom_entity_id:
+    class: Drupal\learning\ParamConverter\EntityParamConverter
+    tags:
+      - {name: paramconverter}
+
+  plugin.manager.learning:
+    class: Drupal\learning\LearningPluginManager
+    parent: default_plugin_manager
+
+  learning.controller_alter:
+    class: Drupal\learning\EventSubscriber\ControllerAlterSubscriber
+    arguments: []
+    tags:
+      - { name: event_subscriber }
+
+  redirect.checker:
+    class: Drupal\learning\LearningService
+    arguments: ['@database']
